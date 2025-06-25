@@ -428,7 +428,6 @@
 
   <script>
     let currentlyOpenCard = null;
-    let hasShownConfetti = false;
 
     function toggleDetails(card) {
       const isActive = card.classList.contains('active');
@@ -469,87 +468,12 @@
       const progressText = document.getElementById('progressText');
       progressBar.style.width = percent + '%';
       progressText.textContent = percent + '%';
-
-      if (percent === 100) {
-        showConfetti();
-      } else {
-        hasShownConfetti = false;
-      }
     }
 
     // Initialize progress on load
     document.addEventListener('DOMContentLoaded', () => {
       updateProgress();
     });
-
-    // Confetti logic
-    const canvas = document.getElementById("confetti-canvas");
-    const ctx = canvas.getContext("2d");
-    let confetti = [];
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-
-    function randomBetween(min, max) {
-      return Math.random() * (max - min) + min;
-    }
-
-    function showConfetti() {
-      if (hasShownConfetti) return;
-      hasShownConfetti = true;
-      canvas.style.display = 'block';
-
-      for (let i = 0; i < 25; i++) {
-        confetti.push({
-          x: randomBetween(0, canvas.width),
-          y: -20,
-          r: randomBetween(2, 5),
-          d: Math.random() * 10,
-          color: ["#61D095", "#D38B5D", "#6C9A8B"][Math.floor(Math.random() * 3)],
-          tilt: Math.floor(Math.random() * 10) - 10,
-          tiltAngleIncremental: Math.random() * 0.07 + 0.05,
-          tiltAngle: 0
-        });
-      }
-      animateConfetti();
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confetti.forEach((c, i) => {
-        ctx.beginPath();
-        ctx.lineWidth = c.r;
-        ctx.strokeStyle = c.color;
-        ctx.moveTo(c.x + c.tilt + c.r, c.y);
-        ctx.lineTo(c.x + c.tilt, c.y + c.r + c.d);
-        ctx.stroke();
-      });
-      update();
-    }
-
-    function update() {
-      confetti.forEach((c, i) => {
-        c.tilt += c.tiltAngleIncremental;
-        c.y += (Math.cos(0.04 + c.d) + 3 + c.r / 2) * 1.2;
-        c.x += Math.sin(0.02 + c.d) * 1.2;
-        if (c.y > canvas.height) {
-          confetti.splice(i, 1);
-        }
-      });
-    }
-
-    function animateConfetti() {
-      draw();
-      if (confetti.length > 0) {
-        requestAnimationFrame(animateConfetti);
-      } else {
-        canvas.style.display = 'none';
-      }
-    }
   </script>
 </body>
 
