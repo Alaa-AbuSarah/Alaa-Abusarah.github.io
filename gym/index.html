@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en, ar">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>Exercise List</title>
+
+  <!-- FAVICON FILES -->
+  <link href="../images/Logo 144x144.png" rel="apple-touch-icon" sizes="144x144">
+  <link href="../images/Logo 114x114.png" rel="apple-touch-icon" sizes="114x114">
+  <link href="../images/Logo 72x72.png" rel="apple-touch-icon" sizes="72x72">
+  <link href="../images/Logo 72x72.png" rel="shortcut icon">
+
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #0E273C;
+      color: white;
+      line-height: 1.6;
+      padding: 1rem;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: white;
+    }
+
+    .progress-container {
+      background: rgba(108, 154, 139, 0.2);
+      border-radius: 9999px;
+      overflow: hidden;
+      height: 32px;
+      margin-bottom: 1.5rem;
+      position: relative;
+      box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .progress-bar {
+      background: linear-gradient(to right, #61D095, #D38B5D);
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease-in-out;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .progress-text {
+      position: absolute;
+      width: 100%;
+      text-align: center;
+      line-height: 32px;
+      color: white;
+      font-weight: 600;
+      z-index: 2;
+      pointer-events: none;
+      font-size: 0.95rem;
+    }
+
+    .exercise-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .exercise-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .exercise-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .exercise-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .menu-icon {
+      width: 1.5rem;
+      height: 1.5rem;
+      stroke: #D38B5D;
+      stroke-width: 2;
+      transition: transform 0.3s ease;
+    }
+
+    .exercise-card.active .menu-icon {
+      transform: rotate(90deg);
+    }
+
+    .exercise-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      color: #aaa;
+      margin-bottom: 0.75rem;
+      gap: 0.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .video-container {
+      display: none;
+      margin-top: 1rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .video-container iframe {
+      width: 100%;
+      height: 250px;
+      border-radius: 12px;
+      border: none;
+    }
+
+    .exercise-card.completed {
+      opacity: 0.6;
+    }
+
+    .checkbox-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+    }
+
+    .checkbox-wrapper input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 24px;
+      width: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      border: 2px solid #6C9A8B;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-wrapper input:checked~.checkmark {
+      background-color: #61D095;
+      border-color: #61D095;
+      box-shadow: 0 0 8px rgba(97, 208, 149, 0.5);
+      transform: scale(1.1);
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+      left: 7px;
+      top: 4px;
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      transition: transform 0.2s ease;
+    }
+
+    .checkbox-wrapper input:checked~.checkmark:after {
+      display: block;
+      transform: rotate(45deg) scale(1.1);
+    }
+
+    @media (max-width: 500px) {
+      .exercise-name {
+        font-size: 1rem;
+      }
+
+      .meta-item {
+        font-size: 0.75rem;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .exercise-card.completed .exercise-name {
+        text-decoration: line-through;
+        color: #61D095;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header>
+    <h1>صدر + تراي</h1>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-text" id="progressText">0%</div>
+    </div>
+  </header>
+
+  <!-- Exercise List -->
+  <main>
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">صدر بنك مائل بار</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">صدر همر عادي</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/iBdnHY51ouE?si=DrO1Oqxk_5QfXGMs"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">صدر بنك مقلوب دامبلز ضغط</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/BTh9MJhheSE?si=gau-qSJLKtdJAKYe"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">صدر بنك عادي دامبلز فتح</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">صدر ماكنة تجميع</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+
+    <h1>-----------------------------</h1>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">تراي كيبل للأسفل مستقيم واسع</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>4 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">تراي دامبل منفرد فوق الرأس</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>4 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+
+    <div class="exercise-card" onclick="toggleDetails(this)" onkeydown="if(event.key==='Enter') toggleDetails(this)"
+      tabindex="0" role="button">
+      <div class="exercise-header">
+        <label class="checkbox-wrapper" aria-label="Mark as completed">
+          <input type="checkbox" onchange="toggleCompleted(this)" />
+          <span class="checkmark"></span>
+        </label>
+        <div class="exercise-name">تراي دامبلز مزدوج دفع للخلف</div>
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </div>
+      <div class="exercise-meta">
+        <div class="meta-item"><span>3 عدات</span></div>
+        <div class="meta-item"><span>10-12 تكرار</span></div>
+        <div class="meta-item"><span>50 ثانيه</span></div>
+      </div>
+      <div class="video-container">
+        <iframe src="https://www.youtube.com/embed/_5L6Qcd8QGw?si=CrNwt29i2rcN7etA"></iframe>
+      </div>
+    </div>
+  </main>
+
+  <!-- Confetti Canvas -->
+  <canvas id="confetti-canvas" style="position:fixed;inset:0;z-index:1000;pointer-events:none;display:none;"></canvas>
+
+  <script>
+    let currentlyOpenCard = null;
+    let hasShownConfetti = false;
+
+    function toggleDetails(card) {
+      const isActive = card.classList.contains('active');
+      document.querySelectorAll('.exercise-card').forEach(c => {
+        c.classList.remove('active');
+        const videoContainer = c.querySelector('.video-container');
+        const iframe = videoContainer.querySelector('iframe');
+        if (iframe) {
+          iframe.src = iframe.src; // This resets the iframe and stops the video
+        }
+        videoContainer.style.display = 'none';
+      });
+      if (!isActive) {
+        card.classList.add('active');
+        const videoContainer = card.querySelector('.video-container');
+        videoContainer.style.display = 'block';
+        currentlyOpenCard = card;
+      } else {
+        currentlyOpenCard = null;
+      }
+    }
+
+    function toggleCompleted(input) {
+      const card = input.closest('.exercise-card');
+      if (input.checked) {
+        card.classList.add('completed');
+      } else {
+        card.classList.remove('completed');
+      }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const totalExercises = document.querySelectorAll('.exercise-card').length;
+      const completedCount = document.querySelectorAll('.exercise-card.completed').length;
+      const percent = Math.round((completedCount / totalExercises) * 100);
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      progressBar.style.width = percent + '%';
+      progressText.textContent = percent + '%';
+
+      if (percent === 100) {
+        showConfetti();
+      } else {
+        hasShownConfetti = false;
+      }
+    }
+
+    // Initialize progress on load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateProgress();
+    });
+
+    // Confetti logic
+    const canvas = document.getElementById("confetti-canvas");
+    const ctx = canvas.getContext("2d");
+    let confetti = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function randomBetween(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function showConfetti() {
+      if (hasShownConfetti) return;
+      hasShownConfetti = true;
+      canvas.style.display = 'block';
+
+      for (let i = 0; i < 100; i++) {
+        confetti.push({
+          x: randomBetween(0, canvas.width),
+          y: -20,
+          r: randomBetween(2, 5),
+          d: Math.random() * 10,
+          color: ["#61D095", "#D38B5D", "#6C9A8B"][Math.floor(Math.random() * 3)],
+          tilt: Math.floor(Math.random() * 10) - 10,
+          tiltAngleIncremental: Math.random() * 0.07 + 0.05,
+          tiltAngle: 0
+        });
+      }
+      animateConfetti();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach((c, i) => {
+        ctx.beginPath();
+        ctx.lineWidth = c.r;
+        ctx.strokeStyle = c.color;
+        ctx.moveTo(c.x + c.tilt + c.r, c.y);
+        ctx.lineTo(c.x + c.tilt, c.y + c.r + c.d);
+        ctx.stroke();
+      });
+      update();
+    }
+
+    function update() {
+      confetti.forEach((c, i) => {
+        c.tilt += c.tiltAngleIncremental;
+        c.y += (Math.cos(0.04 + c.d) + 3 + c.r / 2) * 1.2;
+        c.x += Math.sin(0.02 + c.d) * 1.2;
+        if (c.y > canvas.height) {
+          confetti.splice(i, 1);
+        }
+      });
+    }
+
+    function animateConfetti() {
+      draw();
+      if (confetti.length > 0) {
+        requestAnimationFrame(animateConfetti);
+      } else {
+        canvas.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+
+</html>
