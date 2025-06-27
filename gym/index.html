@@ -48,6 +48,11 @@
       color: white;
     }
 
+    h3 {
+      text-align: center;
+      color: white;
+    }
+
     .progress-container {
       background: rgba(108, 154, 139, 0.2);
       border-radius: 9999px;
@@ -235,7 +240,9 @@
 <body>
   <!-- Header -->
   <header>
+    <h3>كوتش نزار</h3>
     <h1>صدر + تراي</h1>
+
     <div class="progress-container">
       <div class="progress-bar" id="progressBar"></div>
       <div class="progress-text" id="progressText">0%</div>
@@ -425,6 +432,10 @@
 
   <!-- Confetti Canvas -->
   <canvas id="confetti-canvas" style="position:fixed;inset:0;z-index:1000;pointer-events:none;display:none;"></canvas>
+
+  <!-- Floating Image - Bottom Right -->
+  <img src="../images/Logo 72x72.png" alt="Floating Icon"
+    style="position: fixed; top: 1rem; right: 1rem; width: 60px; height: 60px; z-index: 1000;">
 
   <script>
     let currentlyOpenCard = null;
