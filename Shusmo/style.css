@@ -35,7 +35,7 @@ body {
 /* Header */
 header {
     padding: 15px 0;
-    position: fixed;
+    /* position: fixed; */
     width: 100%;
     top: 0;
     z-index: 1000;
@@ -139,7 +139,7 @@ header {
     align-items: center;
     position: relative;
     overflow: hidden;
-    padding-top: 70px;
+    padding-top: 25px;
     padding-bottom: 20px;
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
 }
@@ -269,7 +269,7 @@ header {
 
 /* Games Section */
 .games {
-    padding: 120px 0;
+    padding: 35px 0;
     background-color: #ffffff;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -461,7 +461,7 @@ header {
 
 /* About Section */
 .about {
-    padding: 120px 0;
+    padding: 50px 0;
     background-color: #ffffff;
     position: relative;
 }
