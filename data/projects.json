@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "image": "images/Projects/IconForge.webp",
+        "title": "IconForge - Icon Generator",
+        "description": "Generates icons directly from 3D models, saving developers countless hours in asset creation",
+        "compatibility": "Compatible with Built-in, URP, and HDRP pipelines",
+        "releaseDate": "Released April 25, 2025 • 3.4 MB",
+        "favorites": 5,
+        "version": "v1.0.0",
+        "price": "$4.99",
+        "category": "UNITY ASSET",
+        "url": "https://assetstore.unity.com/packages/tools/gui/iconforge-icon-generator-from-3d-models-317711",
+        "atc": "DOWNLOAD NOW →"
+    },
+    {
+        "id": 2,
+        "title": "Texture RePainter",
+        "image": "images/Projects/Texture RePainter.webp",
+        "description": "Generate endless variations of textures for diverse environments without repetitive visuals",
+        "compatibility": "Compatible with Built-in, URP, and HDRP pipelines",
+        "releaseDate": "Released June 4, 2025 • 6.5 MB",
+        "favorites": 6,
+        "version": "v1.0.1",
+        "price": "$7.99",
+        "category": "UNITY ASSET",
+        "url": "https://assetstore.unity.com/packages/tools/painting/texture-repainter-generate-variation-of-the-texture-321065",
+        "atc": "DOWNLOAD NOW →"
+    },
+    {
+        "id": 3,
+        "title": "Procedural Object Placement",
+        "image": "images/Projects/Procedural Object Placement.webp",
+        "description": "Streamline level design with runtime procedural object placement for dynamic scenes",
+        "compatibility": "Compatible with Built-in, URP, and HDRP pipelines",
+        "releaseDate": "Released April 23, 2025 • 581.1 KB",
+        "favorites": 2,
+        "version": "v1.0.3",
+        "price": "$4.99",
+        "category": "UNITY ASSET",
+        "url": "https://assetstore.unity.com/packages/tools/level-design/procedural-object-placement-runtime-317152",
+        "atc": "DOWNLOAD NOW →"
+    }
+]

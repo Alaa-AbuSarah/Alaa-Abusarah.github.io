@@ -1,0 +1,60 @@
+.error-page {
+            padding: 12rem 0 6rem;
+            position: relative;
+            color: var(--light);
+            text-align: center;
+            min-height: 100vh;
+            background-color: var(--primary);
+            border-bottom: 3px solid var(--accentA);
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(255, 88, 88, 0.05) 10px,
+                    rgba(255, 88, 88, 0.05) 20px);
+        }
+
+        .error-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            color: var(--danger);
+        }
+
+        .error-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--light);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .error-page {
+                padding: 8rem 0 3rem;
+            }
+
+            .error-code {
+                font-size: 5rem;
+            }
+
+            .error-title {
+                font-size: 2rem;
+            }
+
+            .error-message {
+                font-size: 1rem;
+            }
+        }
