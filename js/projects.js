@@ -51,8 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                     <h3>${project.title}</h3>
                     <p>${project.description}</p>
-                    <p>${project.compatibility}</p>
-                    <p>${project.releaseDate}</p>
                     <div class="project-stats">
                         <div class="stat"><span class="stat-icon">⭐</span> ${project.favorites} Favorites</div>
                         <div class="stat"><span class="stat-icon">🔄</span> ${project.version}</div>
