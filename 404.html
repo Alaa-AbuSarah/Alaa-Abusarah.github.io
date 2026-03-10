@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Primary Meta Tags -->
+    <title>Page Not Found | Alaa Abusarah</title>
+    <meta name="title" content="Page Not Found | Alaa Abusarah">
+    <meta name="description" content="The page you are looking for seems to be missing. Return to the homepage.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Page Not Found | Alaa Abusarah">
+    <meta property="og:description" content="404 - The requested resource could not be found.">
+    <meta property="og:image"
+        content="https://image.qwenlm.ai/public_source/fdf19a27-9d5c-4bbf-8a53-64edb1b5b4fb/1b1a282b8-719e-497b-ac0b-832eb79a1b4e.png">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="Alaa Abusarah">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Page Not Found | Alaa Abusarah">
+    <meta property="twitter:description" content="404 - The requested resource could not be found.">
+    <meta property="twitter:image"
+        content="https://image.qwenlm.ai/public_source/fdf19a27-9d5c-4bbf-8a53-64edb1b5b4fb/1b1a282b8-719e-497b-ac0b-832eb79a1b4e.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="images/Logo/Logo.jpg">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/Logo/Logo.jpg">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/Logo/Logo.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="antialiased selection:bg-brand-500 selection:text-white flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar" role="navigation">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0">
+                    <a href="index.html"
+                        class="text-xl font-bold tracking-tight text-white hover:text-brand-500 transition-colors"
+                        aria-label="Alaa Abusarah Home">Alaa<span class="text-brand-500">.</span></a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="index.html"
+                            class="text-sm font-medium text-slate-300 hover:text-white transition-colors">Home</a>
+                        <a href="#contact"
+                            class="px-4 py-2 rounded-full bg-white text-dark-900 text-sm font-semibold hover:bg-brand-50 transition-colors">Contact
+                            Me</a>
+                    </div>
+                </div>
+                <!-- Mobile menu button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button type="button"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 focus:outline-none"
+                        aria-controls="mobile-menu" aria-expanded="false"
+                        onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden bg-dark-900 border-b border-slate-800" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="index.html"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Home</a>
+                <a href="#contact"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-brand-500 hover:text-brand-400 hover:bg-slate-800">Contact
+                    Me</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 404 Content Section -->
+    <main class="flex-grow flex items-center justify-center relative pt-20 pb-12 overflow-hidden">
+
+        <!-- Background decorative elements -->
+        <div class="absolute top-0 left-1/2 w-full -translate-x-1/2 h-full overflow-hidden -z-10 pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                <!-- Text Content -->
+                <div class="text-center lg:text-left order-2 lg:order-1 animate-fade-in-up">
+                    <div
+                        class="inline-flex items-center px-3 py-1 rounded-full border border-red-900/50 bg-red-900/20 text-xs font-medium text-red-400 mb-6">
+                        <span class="flex h-2 w-2 rounded-full bg-red-500 mr-2 animate-pulse"></span>
+                        Error 404: Asset Missing
+                    </div>
+
+                    <h1 class="text-6xl md:text-8xl font-bold tracking-tight text-white mb-6">
+                        4<span class="gradient-text">04</span>
+                    </h1>
+
+                    <h2 class="text-2xl md:text-3xl font-semibold text-slate-200 mb-4">
+                        Scene Not Found
+                    </h2>
+
+                    <p class="text-slate-400 text-lg mb-8 max-w-lg mx-auto lg:mx-0">
+                        It seems you've navigated to a coordinate that doesn't exist in this build. The asset you're
+                        looking for might have been moved, deleted, or never existed.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="index.html"
+                            class="inline-flex items-center justify-center px-8 py-3.5 rounded-lg bg-brand-600 text-white font-semibold hover:bg-brand-500 transition-all shadow-lg shadow-brand-500/25 group">
+                            <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                            Return Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer / Contact Section -->
+    <section id="contact" class="py-12 bg-gradient-to-b from-dark-900 to-black border-t border-slate-800">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-xl font-bold text-white mb-4">Need help finding something?</h3>
+            <p class="text-slate-400 mb-8">
+                I'm always open to discussing product strategy or technical challenges.
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="mailto:work@alaaabusarah.com"
+                    class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    Email Me
+                </a>
+                <a href="https://www.linkedin.com/in/alaaabusarah/"
+                    class="inline-flex items-center justify-center px-6 py-3 border border-slate-700 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white transition-colors"
+                    target="_blank" rel="noopener noreferrer">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                    LinkedIn
+                </a>
+            </div>
+
+            <footer class="mt-12 border-t border-slate-800 pt-8 text-slate-500 text-sm">
+                &copy; 2026 Alaa Abusarah. All rights reserved.
+            </footer>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script>
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg');
+                nav.classList.replace('bg-dark-900/80', 'bg-dark-900/95');
+            } else {
+                nav.classList.remove('shadow-lg');
+                nav.classList.replace('bg-dark-900/95', 'bg-dark-900/80');
+            }
+        });
+    </script>
+</body>
+
+</html>
