@@ -286,8 +286,7 @@
             z-index: 50 !important;
         }
 
-        /* Login Overlay - Highest Priority */
-        #loginOverlay {
+        #welcomeModal {
             z-index: 10000 !important;
         }
 
@@ -440,157 +439,28 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
         }
 
-        /* PIN Input Styles */
-        .pin-input-container {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
+        /* Welcome Modal Animation */
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
         }
 
-        .pin-input {
-            width: 60px;
-            height: 70px;
-            text-align: center;
-            font-size: 32px;
-            font-weight: 600;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            transition: all 0.2s;
-            background-color: white;
-            color: #1e293b;
-        }
-
-        .dark .pin-input {
-            background-color: #1e293b;
-            border-color: #475569;
-            color: #f1f5f9;
-        }
-
-        .pin-input:focus {
-            border-color: #4f46e5;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-        }
-
-        .pin-input.filled {
-            border-color: #4f46e5;
-            background-color: #eef2ff;
-        }
-
-        .dark .pin-input.filled {
-            background-color: #312e81;
-        }
-
-        /* PIN Dots Display */
-        .pin-dots {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-
-        .pin-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            border: 2px solid #cbd5e1;
-            transition: all 0.2s;
-        }
-
-        .dark .pin-dot {
-            border-color: #475569;
-        }
-
-        .pin-dot.filled {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-        }
-
-        /* App Content - Hidden until logged in */
-        #appContent {
-            display: none;
-        }
-
-        #appContent.logged-in {
-            display: flex;
-        }
-
-        /* Logout Button */
-        .logout-btn {
-            opacity: 0.7;
-            transition: all 0.2s;
-        }
-
-        .logout-btn:hover {
-            opacity: 1;
-            background-color: rgba(239, 68, 68, 0.1);
+        .welcome-modal-content {
+            animation: modalSlideUp 0.4s ease-out;
         }
     </style>
 </head>
 
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col transition-colors duration-300">
-    <!-- Login Overlay -->
-    <div id="loginOverlay"
-        class="fixed inset-0 bg-gray-900/90 backdrop-blur-md z-[10000] flex items-center justify-center p-4">
-        <div
-            class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8 transform transition-all">
-            <div class="text-center mb-6">
-                <div
-                    class="w-16 h-16 mx-auto mb-4 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
-                    <i class="fa-solid fa-lock text-2xl text-indigo-600 dark:text-indigo-400"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
-                <p class="text-gray-500 dark:text-gray-400 text-sm mt-2">Enter your 4-digit PIN to access your expense
-                    tracker</p>
-            </div>
-            <!-- PIN Dots Display -->
-            <div class="pin-dots">
-                <div class="pin-dot" id="pinDot1"></div>
-                <div class="pin-dot" id="pinDot2"></div>
-                <div class="pin-dot" id="pinDot3"></div>
-                <div class="pin-dot" id="pinDot4"></div>
-            </div>
-            <!-- Hidden PIN Input -->
-            <input type="text" id="pinInput" maxlength="4" inputmode="numeric" pattern="[0-9]*" class="sr-only">
-            <!-- Numeric Keypad -->
-            <div class="grid grid-cols-3 gap-3 mb-6">
-                <button type="button" onclick="addPinDigit('1')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">1</button>
-                <button type="button" onclick="addPinDigit('2')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">2</button>
-                <button type="button" onclick="addPinDigit('3')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">3</button>
-                <button type="button" onclick="addPinDigit('4')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">4</button>
-                <button type="button" onclick="addPinDigit('5')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">5</button>
-                <button type="button" onclick="addPinDigit('6')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">6</button>
-                <button type="button" onclick="addPinDigit('7')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">7</button>
-                <button type="button" onclick="addPinDigit('8')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">8</button>
-                <button type="button" onclick="addPinDigit('9')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">9</button>
-                <button type="button" onclick="clearPin()"
-                    class="pin-key h-16 rounded-xl bg-rose-100 dark:bg-rose-900/30 hover:bg-rose-200 dark:hover:bg-rose-900/50 text-sm font-semibold text-rose-600 dark:text-rose-400 transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-delete-left"></i>
-                </button>
-                <button type="button" onclick="addPinDigit('0')"
-                    class="pin-key h-16 rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-xl font-semibold text-gray-900 dark:text-white transition-colors">0</button>
-                <button type="button" onclick="submitPin()"
-                    class="pin-key h-16 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-            <p class="text-xs text-gray-400 dark:text-gray-500 text-center">
-                <i class="fa-solid fa-shield-halved mr-1"></i>
-                Your data is securely stored and isolated per PIN
-            </p>
-        </div>
-    </div>
     <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay fixed inset-0 z-40 flex items-center justify-center hidden">
+    <div id="loadingOverlay" class="loading-overlay fixed inset-0 z-40 flex items-center justify-center">
         <div class="text-center">
             <div class="spinner mx-auto mb-3"></div>
             <p class="text-gray-600 dark:text-gray-300 font-medium">Loading your data...</p>
@@ -601,404 +471,413 @@
         <i class="fa-solid fa-check-circle"></i>
         <span>Settings saved</span>
     </div>
-    <!-- Main App Content (Hidden until logged in) -->
-    <div id="appContent" class="flex flex-col min-h-screen">
-        <!-- Header -->
-        <header class="bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors duration-300">
-            <div class="max-w-3xl mx-auto px-3 sm:px-6 lg:px-8">
+    <!-- Welcome Modal (New User) -->
+    <div id="welcomeModal"
+        class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[10000] hidden flex items-center justify-center p-4">
+        <div class="welcome-modal-content bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md p-6 sm:p-8">
+            <div class="text-center">
                 <div
-                    class="h-12 sm:h-14 flex items-center justify-between border-b border-gray-100 dark:border-dark-border">
-                    <div class="flex items-center gap-3">
-                        <h1 class="text-lg font-bold text-gray-900 dark:text-white sm:block">Expense Tracker</h1>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <label
-                            class="text-xs font-medium text-gray-500 dark:text-gray-400 hidden xs:block">Month:</label>
-                        <input type="month" id="monthSelector"
-                            class="border border-gray-300 dark:border-dark-border rounded-md px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm bg-white dark:bg-dark-input dark:text-gray-200">
-                        <button onclick="logout()"
-                            class="logout-btn p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
-                            title="Logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                        </button>
-                    </div>
+                    class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-3xl text-white"></i>
                 </div>
-                <!-- Main Tab Navigation - Horizontally Scrollable on Mobile -->
-                <nav class="tab-nav flex space-x-1 sm:space-x-2 pb-0" aria-label="Tabs">
-                    <button onclick="switchTab('tab-add')" id="btn-tab-add"
-                        class="tab-btn active flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center min-h-[48px]">
-                        <i class="fa-solid fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Add
-                            Expense</span><span class="sm:hidden">Add</span>
-                    </button>
-                    <button onclick="switchTab('tab-transactions')" id="btn-tab-transactions"
-                        class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
-                        <i class="fa-solid fa-list mr-1 sm:mr-2"></i><span
-                            class="hidden sm:inline">Transactions</span><span class="sm:hidden">History</span>
-                    </button>
-                    <button onclick="switchTab('tab-overview')" id="btn-tab-overview"
-                        class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
-                        <i class="fa-solid fa-chart-pie mr-1 sm:mr-2"></i><span
-                            class="hidden sm:inline">Overview</span><span class="sm:hidden">Stats</span>
-                    </button>
-                    <button onclick="switchTab('tab-settings')" id="btn-tab-settings"
-                        class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
-                        <i class="fa-solid fa-gear mr-1 sm:mr-2"></i><span class="hidden sm:inline">Settings</span><span
-                            class="sm:hidden">Settings</span>
-                    </button>
-                </nav>
-            </div>
-        </header>
-        <!-- Main Content Area -->
-        <main class="flex-grow max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full safe-bottom pb-20 sm:pb-8">
-            <!-- TAB 1: ADD EXPENSE -->
-            <div id="tab-add" class="tab-content fade-in">
-                <div
-                    class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 max-w-lg mx-auto transition-colors duration-300">
-                    <div class="text-center mb-5 sm:mb-6">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">New Expense</h2>
-                        <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">Enter details below to track
-                            your spending.</p>
-                    </div>
-                    <form id="expenseForm" class="space-y-4">
-                        <input type="hidden" id="editId">
-                        <div>
-                            <label
-                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Amount
-                                (<span id="currencySymbolDisplay">$</span>)</label>
-                            <div class="relative">
-                                <input type="number" id="amount" step="0.01" required
-                                    class="w-full px-4 py-3.5 sm:py-4 text-lg border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium bg-white dark:bg-dark-input dark:text-white text-left"
-                                    placeholder="0.00" inputmode="decimal">
-                            </div>
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Category</label>
-                            <select id="category"
-                                class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-gray-200 text-base">
-                            </select>
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Date</label>
-                            <input type="date" id="date" required
-                                class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-white text-base">
-                        </div>
-                        <div class="pt-2 flex gap-3">
-                            <button type="button" id="cancelEditBtn"
-                                class="hidden flex-1 px-4 py-3.5 sm:py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-colors text-base min-h-[48px]">
-                                Cancel
-                            </button>
-                            <button type="submit" id="submitBtn"
-                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 sm:py-4 rounded-xl transition-colors shadow-lg shadow-indigo-200 dark:shadow-none text-base min-h-[48px] flex items-center justify-center gap-2">
-                                <span id="submitBtnText">Add Expense</span>
-                                <div id="submitSpinner" class="spinner hidden"
-                                    style="width: 18px; height: 18px; border-width: 2px;"></div>
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- TAB 2: TRANSACTIONS -->
-            <div id="tab-transactions" class="tab-content hidden fade-in">
-                <div
-                    class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
-                    <div
-                        class="p-4 sm:p-6 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 rounded-t-xl">
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">History</h2>
-                        <span
-                            class="text-xs font-medium px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full"
-                            id="transactionCount">0 items</span>
-                    </div>
-                    <!-- Desktop View (No Headers) -->
-                    <div class="hidden sm:block overflow-x-auto table-container">
-                        <div id="desktopTransactionList" class="divide-y divide-gray-100 dark:divide-dark-border">
-                            <!-- Items populated dynamically -->
-                        </div>
-                    </div>
-                    <!-- Mobile View -->
-                    <div class="sm:hidden divide-y divide-gray-100 dark:divide-dark-border" id="mobileTransactionList">
-                    </div>
-                    <div id="emptyState"
-                        class="hidden flex-col items-center justify-center py-12 sm:py-16 text-center px-4">
-                        <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-full mb-4">
-                            <i class="fa-solid fa-receipt text-2xl text-gray-400"></i>
-                        </div>
-                        <p class="text-gray-500 dark:text-gray-400 font-medium">No transactions found.</p>
-                        <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Switch to "Add Expense" to create one.
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Welcome! 🎉</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                    A personal account has been automatically created for you. Your data is stored privately and
+                    securely.
+                </p>
+                <div class="bg-indigo-50 dark:bg-indigo-900/30 rounded-xl p-4 mb-6">
+                    <div class="flex items-start gap-3">
+                        <i class="fa-solid fa-circle-info text-indigo-600 dark:text-indigo-400 mt-0.5"></i>
+                        <p class="text-xs text-indigo-700 dark:text-indigo-300 text-left">
+                            <strong>No login required!</strong> Your account is linked to this device. All expenses,
+                            income, and settings are saved automatically.
                         </p>
                     </div>
                 </div>
+                <button onclick="closeWelcomeModal()"
+                    class="w-full px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors shadow-lg shadow-indigo-200 dark:shadow-none">
+                    Get Started
+                </button>
             </div>
-            <!-- TAB 3: OVERVIEW -->
-            <div id="tab-overview" class="tab-content hidden fade-in space-y-4 sm:space-y-6">
-                <section class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-                    <div class="income-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
-                        id="incomeCard" onclick="openIncomeModal()">
-                        <div
-                            class="absolute right-0 top-0 p-2 sm:p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <i class="fa-solid fa-arrow-trend-up text-2xl sm:text-4xl text-emerald-500"></i>
-                        </div>
-                        <div class="relative z-10">
-                            <p
-                                class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                Income</p>
-                            <div class="flex items-end gap-1 sm:gap-2">
-                                <span class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white"
-                                    id="displayIncome">$0.00</span>
-                                <i class="fa-solid fa-pen text-xs text-gray-400 hidden sm:block"
-                                    id="incomeEditIcon"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="expenses-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
-                        id="expensesCard">
-                        <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
-                            <i class="fa-solid fa-arrow-trend-down text-2xl sm:text-4xl text-rose-500"></i>
-                        </div>
-                        <div class="relative z-10">
-                            <p
-                                class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                Expenses</p>
-                            <h3 class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white"
-                                id="displayExpenses">
-                                $0.00</h3>
-                        </div>
-                    </div>
-                    <div class="balance-card col-span-2 sm:col-span-1 bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
-                        id="balanceCard">
-                        <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
-                            <i class="fa-solid fa-scale-balanced text-2xl sm:text-4xl text-blue-500"></i>
-                        </div>
-                        <div class="relative z-10">
-                            <p
-                                class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                                Balance</p>
-                            <h3 class="text-base sm:text-2xl font-bold" id="displayBalance">$0.00</h3>
-                            <!-- Balance Progress Container - Will be hidden when balance is hidden -->
-                            <div id="balanceProgressContainer"
-                                class="mt-2 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                <div id="balanceProgress" class="h-full bg-emerald-500 transition-all duration-500"
-                                    style="width: 100%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <div
-                    class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 transition-colors duration-300">
-                    <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center">
-                        Spending Breakdown</h2>
-                    <div class="relative h-48 sm:h-64 w-full max-w-md mx-auto">
-                        <canvas id="expenseChart"></canvas>
-                    </div>
-                    <div id="chartEmptyState" class="hidden text-center py-8">
-                        <p class="text-gray-400 text-sm">No expense data to visualize.</p>
-                    </div>
-                </div>
-            </div>
-            <!-- TAB 4: SETTINGS -->
-            <div id="tab-settings" class="tab-content hidden fade-in">
-                <div
-                    class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
-                    <!-- Settings Sub-tabs -->
-                    <div class="border-b border-gray-100 dark:border-dark-border overflow-x-auto">
-                        <div class="flex space-x-1 p-2 min-w-max">
-                            <button onclick="switchSettingsSubTab('settings-general')" id="btn-settings-general"
-                                class="settings-sub-tab active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
-                                <i class="fa-solid fa-sliders mr-2"></i>General
-                            </button>
-                            <button onclick="switchSettingsSubTab('settings-categories')" id="btn-settings-categories"
-                                class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                <i class="fa-solid fa-tags mr-2"></i>Categories
-                            </button>
-                            <button onclick="switchSettingsSubTab('settings-currency')" id="btn-settings-currency"
-                                class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                <i class="fa-solid fa-coins mr-2"></i>Currency
-                            </button>
-                            <button onclick="switchSettingsSubTab('settings-privacy')" id="btn-settings-privacy"
-                                class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                <i class="fa-solid fa-shield-halved mr-2"></i>Privacy
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4 sm:p-6">
-                        <!-- General Section -->
-                        <div id="settings-general" class="settings-section fade-in">
-                            <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">General Settings</h4>
-                            <div class="space-y-6">
-                                <!-- Dark Mode -->
-                                <div
-                                    class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">Dark Mode</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Switch between light
-                                            and
-                                            dark theme</p>
-                                    </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <!-- Default Category Only -->
-                                <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div>
-                                        <label
-                                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Default
-                                            Category</label>
-                                        <select id="defaultCategory" onchange="updateDefaultCategory()"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
-                                        </select>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                                            <i class="fa-solid fa-info-circle mr-1"></i>
-                                            This category will be pre-selected when adding new expenses
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Categories Section -->
-                        <div id="settings-categories" class="settings-section hidden fade-in">
-                            <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage Categories</h4>
-                            <!-- Add New Category Form -->
-                            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl mb-6">
-                                <label
-                                    class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Add
-                                    New Category</label>
-                                <div class="flex flex-col sm:flex-row gap-3 mb-3">
-                                    <input type="text" id="newCategoryName" placeholder="Category Name"
-                                        class="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
-                                    <button onclick="addNewCategory()"
-                                        class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-plus"></i> Add
-                                    </button>
-                                </div>
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs text-gray-500 dark:text-gray-400 mr-2">Select Color:</span>
-                                    <div class="color-swatch selected" style="background-color: #f97316;"
-                                        onclick="selectColor('#f97316', this)"></div>
-                                    <div class="color-swatch" style="background-color: #3b82f6;"
-                                        onclick="selectColor('#3b82f6', this)"></div>
-                                    <div class="color-swatch" style="background-color: #ec4899;"
-                                        onclick="selectColor('#ec4899', this)"></div>
-                                    <div class="color-swatch" style="background-color: #ef4444;"
-                                        onclick="selectColor('#ef4444', this)"></div>
-                                    <div class="color-swatch" style="background-color: #a855f7;"
-                                        onclick="selectColor('#a855f7', this)"></div>
-                                    <div class="color-swatch" style="background-color: #14b8a6;"
-                                        onclick="selectColor('#14b8a6', this)"></div>
-                                    <div class="color-swatch" style="background-color: #64748b;"
-                                        onclick="selectColor('#64748b', this)"></div>
-                                    <div class="color-swatch" style="background-color: #eab308;"
-                                        onclick="selectColor('#eab308', this)"></div>
-                                    <div class="color-swatch" style="background-color: #22c55e;"
-                                        onclick="selectColor('#22c55e', this)"></div>
-                                    <div class="color-swatch" style="background-color: #8b5cf6;"
-                                        onclick="selectColor('#8b5cf6', this)"></div>
-                                    <div class="color-swatch" style="background-color: #f43f5e;"
-                                        onclick="selectColor('#f43f5e', this)"></div>
-                                    <div class="color-swatch" style="background-color: #06b6d4;"
-                                        onclick="selectColor('#06b6d4', this)"></div>
-                                    <div class="color-swatch" style="background-color: #84cc16;"
-                                        onclick="selectColor('#84cc16', this)"></div>
-                                    <div class="color-swatch" style="background-color: #f59e0b;"
-                                        onclick="selectColor('#f59e0b', this)"></div>
-                                    <div class="color-swatch" style="background-color: #6366f1;"
-                                        onclick="selectColor('#6366f1', this)"></div>
-                                    <div class="color-swatch" style="background-color: #10b981;"
-                                        onclick="selectColor('#10b981', this)"></div>
-                                    <div class="color-swatch" style="background-color: #dc2626;"
-                                        onclick="selectColor('#dc2626', this)"></div>
-                                    <div class="color-swatch" style="background-color: #7c3aed;"
-                                        onclick="selectColor('#7c3aed', this)"></div>
-                                    <div class="color-swatch" style="background-color: #0891b2;"
-                                        onclick="selectColor('#0891b2', this)"></div>
-                                    <div class="color-swatch" style="background-color: #be185d;"
-                                        onclick="selectColor('#be185d', this)"></div>
-                                </div>
-                            </div>
-                            <!-- Categories List -->
-                            <div id="categoriesList" class="space-y-3">
-                                <!-- Categories populated dynamically -->
-                            </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
-                                <i class="fa-solid fa-info-circle mr-1"></i>
-                                Changes are saved automatically.
-                            </p>
-                        </div>
-                        <!-- Currency Section - Mobile Friendly -->
-                        <div id="settings-currency" class="settings-section hidden fade-in">
-                            <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Currency Settings</h4>
-                            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                <label
-                                    class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Currency
-                                    Symbol</label>
-                                <div class="flex flex-col sm:flex-row gap-3">
-                                    <input type="text" id="currencyInput" maxlength="5"
-                                        class="flex-1 px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-lg font-medium bg-white dark:bg-dark-input dark:text-white text-center w-full sm:w-auto"
-                                        value="$">
-                                    <button onclick="saveCurrencyFromInput()"
-                                        class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-save"></i> Save
-                                    </button>
-                                </div>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">Enter any symbol or text (e.g.,
-                                    $,
-                                    €, £, BTC, Points)</p>
-                            </div>
-                        </div>
-                        <!-- Privacy Section -->
-                        <div id="settings-privacy" class="settings-section hidden fade-in">
-                            <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Privacy Options</h4>
-                            <div class="space-y-3">
-                                <div
-                                    class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">Show Income</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display income amounts
-                                            in
-                                            overview</p>
-                                    </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="showIncomeToggle" checked
-                                            onchange="updatePrivacySettings()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div
-                                    class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">Show Expenses</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display expense amounts
-                                            in
-                                            overview</p>
-                                    </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="showExpensesToggle" checked
-                                            onchange="updatePrivacySettings()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div
-                                    class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                                    <div>
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">Show Balance</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display remaining
-                                            balance
-                                        </p>
-                                    </div>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="showBalanceToggle" checked
-                                            onchange="updatePrivacySettings()">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
     </div>
+    <!-- Header -->
+    <header class="bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors duration-300">
+        <div class="max-w-3xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div
+                class="h-12 sm:h-14 flex items-center justify-between border-b border-gray-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <h1 class="text-lg font-bold text-gray-900 dark:text-white sm:block">Expense Tracker</h1>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 hidden xs:block">Month:</label>
+                    <input type="month" id="monthSelector"
+                        class="border border-gray-300 dark:border-dark-border rounded-md px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm bg-white dark:bg-dark-input dark:text-gray-200">
+                </div>
+            </div>
+            <!-- Main Tab Navigation - Horizontally Scrollable on Mobile -->
+            <nav class="tab-nav flex space-x-1 sm:space-x-2 pb-0" aria-label="Tabs">
+                <button onclick="switchTab('tab-add')" id="btn-tab-add"
+                    class="tab-btn active flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center min-h-[48px]">
+                    <i class="fa-solid fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Add Expense</span><span
+                        class="sm:hidden">Add</span>
+                </button>
+                <button onclick="switchTab('tab-transactions')" id="btn-tab-transactions"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">Transactions</span><span
+                        class="sm:hidden">History</span>
+                </button>
+                <button onclick="switchTab('tab-overview')" id="btn-tab-overview"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-chart-pie mr-1 sm:mr-2"></i><span
+                        class="hidden sm:inline">Overview</span><span class="sm:hidden">Stats</span>
+                </button>
+                <button onclick="switchTab('tab-settings')" id="btn-tab-settings"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-gear mr-1 sm:mr-2"></i><span class="hidden sm:inline">Settings</span><span
+                        class="sm:hidden">Settings</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full safe-bottom pb-20 sm:pb-8">
+        <!-- TAB 1: ADD EXPENSE -->
+        <div id="tab-add" class="tab-content fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 max-w-lg mx-auto transition-colors duration-300">
+                <div class="text-center mb-5 sm:mb-6">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">New Expense</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">Enter details below to track
+                        your spending.</p>
+                </div>
+                <form id="expenseForm" class="space-y-4">
+                    <input type="hidden" id="editId">
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Amount
+                            (<span id="currencySymbolDisplay">$</span>)</label>
+                        <div class="relative">
+                            <input type="number" id="amount" step="0.01" required
+                                class="w-full px-4 py-3.5 sm:py-4 text-lg border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium bg-white dark:bg-dark-input dark:text-white text-left"
+                                placeholder="0.00" inputmode="decimal">
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Category</label>
+                        <select id="category"
+                            class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-gray-200 text-base">
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Date</label>
+                        <input type="date" id="date" required
+                            class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-white text-base">
+                    </div>
+                    <div class="pt-2 flex gap-3">
+                        <button type="button" id="cancelEditBtn"
+                            class="hidden flex-1 px-4 py-3.5 sm:py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-colors text-base min-h-[48px]">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitBtn"
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 sm:py-4 rounded-xl transition-colors shadow-lg shadow-indigo-200 dark:shadow-none text-base min-h-[48px] flex items-center justify-center gap-2">
+                            <span id="submitBtnText">Add Expense</span>
+                            <div id="submitSpinner" class="spinner hidden"
+                                style="width: 18px; height: 18px; border-width: 2px;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- TAB 2: TRANSACTIONS -->
+        <div id="tab-transactions" class="tab-content hidden fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
+                <div
+                    class="p-4 sm:p-6 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 rounded-t-xl">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">History</h2>
+                    <span
+                        class="text-xs font-medium px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full"
+                        id="transactionCount">0 items</span>
+                </div>
+                <!-- Desktop View (No Headers) -->
+                <div class="hidden sm:block overflow-x-auto table-container">
+                    <div id="desktopTransactionList" class="divide-y divide-gray-100 dark:divide-dark-border">
+                        <!-- Items populated dynamically -->
+                    </div>
+                </div>
+                <!-- Mobile View -->
+                <div class="sm:hidden divide-y divide-gray-100 dark:divide-dark-border" id="mobileTransactionList">
+                </div>
+                <div id="emptyState"
+                    class="hidden flex-col items-center justify-center py-12 sm:py-16 text-center px-4">
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-full mb-4">
+                        <i class="fa-solid fa-receipt text-2xl text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium">No transactions found.</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Switch to "Add Expense" to create one.</p>
+                </div>
+            </div>
+        </div>
+        <!-- TAB 3: OVERVIEW -->
+        <div id="tab-overview" class="tab-content hidden fade-in space-y-4 sm:space-y-6">
+            <section class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="income-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="incomeCard" onclick="openIncomeModal()">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl sm:text-4xl text-emerald-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Income</p>
+                        <div class="flex items-end gap-1 sm:gap-2">
+                            <span class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white"
+                                id="displayIncome">$0.00</span>
+                            <i class="fa-solid fa-pen text-xs text-gray-400 hidden sm:block" id="incomeEditIcon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="expenses-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="expensesCard">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
+                        <i class="fa-solid fa-arrow-trend-down text-2xl sm:text-4xl text-rose-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Expenses</p>
+                        <h3 class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white" id="displayExpenses">
+                            $0.00</h3>
+                    </div>
+                </div>
+                <div class="balance-card col-span-2 sm:col-span-1 bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="balanceCard">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
+                        <i class="fa-solid fa-scale-balanced text-2xl sm:text-4xl text-blue-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Balance</p>
+                        <h3 class="text-base sm:text-2xl font-bold" id="displayBalance">$0.00</h3>
+                        <!-- Balance Progress Container - Will be hidden when balance is hidden -->
+                        <div id="balanceProgressContainer"
+                            class="mt-2 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div id="balanceProgress" class="h-full bg-emerald-500 transition-all duration-500"
+                                style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 transition-colors duration-300">
+                <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center">
+                    Spending Breakdown</h2>
+                <div class="relative h-48 sm:h-64 w-full max-w-md mx-auto">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                <div id="chartEmptyState" class="hidden text-center py-8">
+                    <p class="text-gray-400 text-sm">No expense data to visualize.</p>
+                </div>
+            </div>
+        </div>
+        <!-- TAB 4: SETTINGS -->
+        <div id="tab-settings" class="tab-content hidden fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
+                <!-- Settings Sub-tabs -->
+                <div class="border-b border-gray-100 dark:border-dark-border overflow-x-auto">
+                    <div class="flex space-x-1 p-2 min-w-max">
+                        <button onclick="switchSettingsSubTab('settings-general')" id="btn-settings-general"
+                            class="settings-sub-tab active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                            <i class="fa-solid fa-sliders mr-2"></i>General
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-categories')" id="btn-settings-categories"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-tags mr-2"></i>Categories
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-currency')" id="btn-settings-currency"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-coins mr-2"></i>Currency
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-privacy')" id="btn-settings-privacy"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-shield-halved mr-2"></i>Privacy
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-6">
+                    <!-- General Section -->
+                    <div id="settings-general" class="settings-section fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">General Settings</h4>
+                        <div class="space-y-6">
+                            <!-- Dark Mode -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Dark Mode</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Switch between light and
+                                        dark theme</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <!-- Default Category Only -->
+                            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Default
+                                        Category</label>
+                                    <select id="defaultCategory" onchange="updateDefaultCategory()"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
+                                    </select>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                        <i class="fa-solid fa-info-circle mr-1"></i>
+                                        This category will be pre-selected when adding new expenses
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Categories Section -->
+                    <div id="settings-categories" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage Categories</h4>
+                        <!-- Add New Category Form -->
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl mb-6">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Add
+                                New Category</label>
+                            <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                                <input type="text" id="newCategoryName" placeholder="Category Name"
+                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
+                                <button onclick="addNewCategory()"
+                                    class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Add
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs text-gray-500 dark:text-gray-400 mr-2">Select Color:</span>
+                                <div class="color-swatch selected" style="background-color: #f97316;"
+                                    onclick="selectColor('#f97316', this)"></div>
+                                <div class="color-swatch" style="background-color: #3b82f6;"
+                                    onclick="selectColor('#3b82f6', this)"></div>
+                                <div class="color-swatch" style="background-color: #ec4899;"
+                                    onclick="selectColor('#ec4899', this)"></div>
+                                <div class="color-swatch" style="background-color: #ef4444;"
+                                    onclick="selectColor('#ef4444', this)"></div>
+                                <div class="color-swatch" style="background-color: #a855f7;"
+                                    onclick="selectColor('#a855f7', this)"></div>
+                                <div class="color-swatch" style="background-color: #14b8a6;"
+                                    onclick="selectColor('#14b8a6', this)"></div>
+                                <div class="color-swatch" style="background-color: #64748b;"
+                                    onclick="selectColor('#64748b', this)"></div>
+                                <div class="color-swatch" style="background-color: #eab308;"
+                                    onclick="selectColor('#eab308', this)"></div>
+                                <div class="color-swatch" style="background-color: #22c55e;"
+                                    onclick="selectColor('#22c55e', this)"></div>
+                                <div class="color-swatch" style="background-color: #8b5cf6;"
+                                    onclick="selectColor('#8b5cf6', this)"></div>
+                                <div class="color-swatch" style="background-color: #f43f5e;"
+                                    onclick="selectColor('#f43f5e', this)"></div>
+                                <div class="color-swatch" style="background-color: #06b6d4;"
+                                    onclick="selectColor('#06b6d4', this)"></div>
+                                <div class="color-swatch" style="background-color: #84cc16;"
+                                    onclick="selectColor('#84cc16', this)"></div>
+                                <div class="color-swatch" style="background-color: #f59e0b;"
+                                    onclick="selectColor('#f59e0b', this)"></div>
+                                <div class="color-swatch" style="background-color: #6366f1;"
+                                    onclick="selectColor('#6366f1', this)"></div>
+                                <div class="color-swatch" style="background-color: #10b981;"
+                                    onclick="selectColor('#10b981', this)"></div>
+                                <div class="color-swatch" style="background-color: #dc2626;"
+                                    onclick="selectColor('#dc2626', this)"></div>
+                                <div class="color-swatch" style="background-color: #7c3aed;"
+                                    onclick="selectColor('#7c3aed', this)"></div>
+                                <div class="color-swatch" style="background-color: #0891b2;"
+                                    onclick="selectColor('#0891b2', this)"></div>
+                                <div class="color-swatch" style="background-color: #be185d;"
+                                    onclick="selectColor('#be185d', this)"></div>
+                            </div>
+                        </div>
+                        <!-- Categories List -->
+                        <div id="categoriesList" class="space-y-3">
+                            <!-- Categories populated dynamically -->
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
+                            <i class="fa-solid fa-info-circle mr-1"></i>
+                            Changes are saved automatically.
+                        </p>
+                    </div>
+                    <!-- Currency Section - Mobile Friendly -->
+                    <div id="settings-currency" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Currency Settings</h4>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Currency
+                                Symbol</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="currencyInput" maxlength="5"
+                                    class="flex-1 px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-lg font-medium bg-white dark:bg-dark-input dark:text-white text-center w-full sm:w-auto"
+                                    value="$">
+                                <button onclick="saveCurrencyFromInput()"
+                                    class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-save"></i> Save
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">Enter any symbol or text (e.g., $,
+                                €, £, BTC, Points)</p>
+                        </div>
+                    </div>
+                    <!-- Privacy Section -->
+                    <div id="settings-privacy" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Privacy Options</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Income</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display income amounts in
+                                        overview</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showIncomeToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Expenses</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display expense amounts in
+                                        overview</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showExpensesToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Balance</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display remaining balance
+                                    </p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showBalanceToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
     </main>
     <!-- Income Modal (z-index 50) -->
     <div id="incomeModal"
@@ -1064,12 +943,13 @@
     <div id="toastContainer"
         class="fixed bottom-4 sm:bottom-6 left-0 right-0 z-[9999] flex flex-col items-center gap-2 px-4 pointer-events-none safe-bottom">
     </div>
-    </div>
     <!-- Firebase SDKs & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
         const firebaseConfig = {
             apiKey: "AIzaSyC4csDwxq4OtuT5jggqhEObgoehX3rqfHM",
             authDomain: "expense-tracker-9f575.firebaseapp.com",
@@ -1079,12 +959,12 @@
             appId: "1:1002336839763:web:cbe18449cd329a682a7ea6",
             measurementId: "G-YQ04HBVBCP"
         };
+
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
         const db = getFirestore(app);
-        // --- PIN Authentication State ---
-        let currentUserPIN = null;
-        let userPath = '';
+        const auth = getAuth(app);
+
         // --- State Management ---
         let appData = { income: {}, expenses: {} };
         let settings = {
@@ -1115,8 +995,53 @@
         let selectedColor = '#f97316';
         let activeCardId = null;
         let saveTimeout = null;
-        // --- PIN Input State ---
-        let pinValue = '';
+        let currentUserId = null;
+        let isNewUser = false;
+
+        // --- Firebase Authentication ---
+        function initAuth() {
+            return new Promise((resolve, reject) => {
+                const storedUserId = localStorage.getItem('expenseTrackerUserId');
+                const isNewDevice = !storedUserId;
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        // Store user ID in localStorage for future visits
+                        localStorage.setItem('expenseTrackerUserId', user.uid);
+                        isNewUser = isNewDevice;
+                        resolve(user);
+                    } else {
+                        // Sign in anonymously
+                        signInAnonymously(auth)
+                            .then((userCredential) => {
+                                currentUserId = userCredential.user.uid;
+                                localStorage.setItem('expenseTrackerUserId', currentUserId);
+                                isNewUser = isNewDevice;
+                                resolve(userCredential.user);
+                            })
+                            .catch((error) => {
+                                console.error("Anonymous sign-in failed:", error);
+                                reject(error);
+                            });
+                    }
+                });
+            });
+        }
+
+        // --- Show Welcome Modal for New Users ---
+        function showWelcomeModal() {
+            if (isNewUser) {
+                const modal = document.getElementById('welcomeModal');
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeWelcomeModal() {
+            const modal = document.getElementById('welcomeModal');
+            modal.classList.add('hidden');
+        }
+
         // --- Show Save Indicator ---
         function showSaveIndicator() {
             const indicator = document.getElementById('saveIndicator');
@@ -1125,6 +1050,7 @@
                 indicator.classList.remove('show');
             }, 2000);
         }
+
         // --- Debounced Save to Firebase ---
         function debouncedSaveSettings() {
             if (saveTimeout) {
@@ -1134,6 +1060,7 @@
                 saveSettingsToFirebase();
             }, 500);
         }
+
         // --- Toast Notifications - Bottom Center ---
         function showToast(message, type = 'info', duration = 3000) {
             const container = document.getElementById('toastContainer');
@@ -1167,6 +1094,7 @@
             }
             return toast;
         }
+
         // --- Confirmation Modal ---
         function showConfirm(message, onConfirm) {
             const modal = document.getElementById('confirmModal');
@@ -1184,118 +1112,15 @@
             });
             newCancelBtn.addEventListener('click', () => { modal.classList.add('hidden'); });
         }
+
         document.getElementById('confirmModal').addEventListener('click', (e) => {
             if (e.target.id === 'confirmModal') document.getElementById('confirmModal').classList.add('hidden');
         });
-        // --- PIN Authentication Functions ---
-        function updatePinDots() {
-            for (let i = 1; i <= 4; i++) {
-                const dot = document.getElementById(`pinDot${i}`);
-                if (i <= pinValue.length) {
-                    dot.classList.add('filled');
-                } else {
-                    dot.classList.remove('filled');
-                }
-            }
-        }
-        function addPinDigit(digit) {
-            if (pinValue.length < 4) {
-                pinValue += digit;
-                updatePinDots();
-                if (pinValue.length === 4) {
-                    setTimeout(() => submitPin(), 200);
-                }
-            }
-        }
-        function clearPin() {
-            pinValue = '';
-            updatePinDots();
-            document.getElementById('pinInput').focus();
-        }
-        async function submitPin() {
-            if (pinValue.length !== 4) {
-                showToast('Please enter a 4-digit PIN', 'warning');
-                return;
-            }
-            const pin = pinValue;
-            const userDocRef = doc(db, 'users', pin);
-            try {
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    // User exists - log in
-                    loginWithPIN(pin);
-                } else {
-                    // User doesn't exist - ask to create
-                    showConfirm(`No account found for PIN ${pin}. Would you like to create a new account?`, async () => {
-                        await createUserWithPIN(pin);
-                    });
-                }
-            } catch (error) {
-                console.error("Error checking PIN:", error);
-                showToast('Failed to verify PIN. Please try again.', 'error');
-            }
-        }
-        async function createUserWithPIN(pin) {
-            try {
-                const userDocRef = doc(db, 'users', pin);
-                await setDoc(userDocRef, {
-                    createdAt: new Date().toISOString(),
-                    pin: pin
-                });
-                loginWithPIN(pin);
-                showToast('Account created successfully!', 'success');
-            } catch (error) {
-                console.error("Error creating user:", error);
-                showToast('Failed to create account. Please try again.', 'error');
-            }
-        }
-        function loginWithPIN(pin) {
-            currentUserPIN = pin;
-            userPath = `users/${pin}`;
-            localStorage.setItem('expenseTrackerPIN', pin);
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('appContent').classList.add('logged-in');
-            document.getElementById('loadingOverlay').classList.remove('hidden');
-            pinValue = '';
-            updatePinDots();
-            initApp();
-        }
-        function logout() {
-            showConfirm('Are you sure you want to logout? You will need to enter your PIN again to access your data.', () => {
-                localStorage.removeItem('expenseTrackerPIN');
-                currentUserPIN = null;
-                userPath = '';
-                if (expensesUnsubscribe) expensesUnsubscribe();
-                if (incomeUnsubscribe) incomeUnsubscribe();
-                if (settingsUnsubscribe) settingsUnsubscribe();
-                document.getElementById('appContent').classList.remove('logged-in');
-                document.getElementById('loginOverlay').classList.remove('hidden');
-                pinValue = '';
-                updatePinDots();
-                showToast('Logged out successfully', 'info');
-            });
-        }
-        // Check for saved PIN on page load
-        function checkSavedPIN() {
-            const savedPIN = localStorage.getItem('expenseTrackerPIN');
-            if (savedPIN && savedPIN.length === 4) {
-                const userDocRef = doc(db, 'users', savedPIN);
-                getDoc(userDocRef).then((docSnap) => {
-                    if (docSnap.exists()) {
-                        loginWithPIN(savedPIN);
-                    } else {
-                        localStorage.removeItem('expenseTrackerPIN');
-                        showToast('Saved PIN not found. Please enter your PIN.', 'info');
-                    }
-                }).catch((error) => {
-                    console.error("Error checking saved PIN:", error);
-                    showToast('Please enter your PIN to continue.', 'info');
-                });
-            }
-        }
+
         // --- Firebase Settings Operations ---
         async function setupSettingsListener() {
-            const settingsRef = doc(db, userPath, 'userSettings', 'app_settings');
+            if (!currentUserId) return;
+            const settingsRef = doc(db, 'users', currentUserId, 'userSettings', 'app_settings');
             settingsUnsubscribe = onSnapshot(settingsRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -1306,6 +1131,7 @@
                     isDataLoaded = true;
                     document.getElementById('loadingOverlay').classList.add('hidden');
                     showToast('Data loaded successfully!', 'success', 2000);
+                    showWelcomeModal();
                 }
             }, (error) => {
                 console.error("Error loading settings:", error);
@@ -1313,15 +1139,18 @@
                 document.getElementById('loadingOverlay').classList.add('hidden');
             });
         }
+
         async function saveSettingsToFirebase() {
+            if (!currentUserId) return;
             try {
-                await setDoc(doc(db, userPath, 'userSettings', 'app_settings'), settings);
+                await setDoc(doc(db, 'users', currentUserId, 'userSettings', 'app_settings'), settings);
                 showSaveIndicator();
             } catch (error) {
                 console.error("Error saving settings:", error);
                 showToast('Failed to save settings.', 'error');
             }
         }
+
         // --- Apply Settings to UI ---
         function applySettings() {
             if (settings.darkMode) {
@@ -1342,10 +1171,12 @@
             renderCategoriesList();
             if (isDataLoaded) renderAll();
         }
+
         function updateCurrencyDisplay(currency) {
             document.getElementById('currencySymbolDisplay').textContent = currency;
             document.getElementById('incomeSymbolDisplay').textContent = currency;
         }
+
         function applyPrivacySettings() {
             const incomeCard = document.getElementById('incomeCard');
             const expensesCard = document.getElementById('expensesCard');
@@ -1372,6 +1203,7 @@
                 balanceProgressContainer.classList.remove('hidden');
             }
         }
+
         function updateCategoryDropdowns() {
             const categorySelect = document.getElementById('category');
             const defaultCategorySelect = document.getElementById('defaultCategory');
@@ -1390,6 +1222,7 @@
             categorySelect.value = settings.defaultCategory;
             defaultCategorySelect.value = settings.defaultCategory;
         }
+
         // --- Settings Sub-tabs Navigation ---
         function switchSettingsSubTab(tabId) {
             document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
@@ -1402,12 +1235,14 @@
             btn.classList.add('active');
             btn.classList.remove('text-gray-500', 'dark:text-gray-400');
         }
+
         // --- Categories Logic ---
         function selectColor(color, element) {
             selectedColor = color;
             document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
         }
+
         function renderCategoriesList() {
             const list = document.getElementById('categoriesList');
             list.innerHTML = '';
@@ -1424,6 +1259,7 @@
                 list.appendChild(div);
             });
         }
+
         function addNewCategory() {
             const nameInput = document.getElementById('newCategoryName');
             const name = nameInput.value.trim();
@@ -1442,6 +1278,7 @@
             debouncedSaveSettings();
             showToast('Category added!', 'success');
         }
+
         function updateCategoryName(index, newName) {
             const cleanName = newName.trim();
             if (!cleanName) return;
@@ -1454,6 +1291,7 @@
             updateCategoryDropdowns();
             debouncedSaveSettings();
         }
+
         function removeCategory(index) {
             const cat = settings.categories[index];
             showConfirm(`Delete category "${cat.name}"?`, () => {
@@ -1467,6 +1305,7 @@
                 showToast('Category deleted', 'success');
             });
         }
+
         // --- Currency Logic ---
         function saveCurrencyFromInput() {
             const input = document.getElementById('currencyInput');
@@ -1476,6 +1315,7 @@
             debouncedSaveSettings();
             showToast('Currency updated', 'success');
         }
+
         // --- General & Privacy Logic ---
         function toggleDarkMode() {
             settings.darkMode = document.getElementById('darkModeToggle').checked;
@@ -1483,6 +1323,7 @@
             debouncedSaveSettings();
             showToast(settings.darkMode ? 'Dark mode enabled' : 'Light mode enabled', 'info', 2000);
         }
+
         function updateDefaultCategory() {
             const newDefault = document.getElementById('defaultCategory').value;
             settings.defaultCategory = newDefault;
@@ -1490,6 +1331,7 @@
             debouncedSaveSettings();
             showToast('Default category updated', 'success', 1500);
         }
+
         function updatePrivacySettings() {
             settings.privacy.showIncome = document.getElementById('showIncomeToggle').checked;
             settings.privacy.showExpenses = document.getElementById('showExpensesToggle').checked;
@@ -1499,10 +1341,12 @@
             debouncedSaveSettings();
             showToast('Privacy settings updated', 'success', 1500);
         }
+
         // --- Firebase Data Operations ---
         async function setupRealtimeListeners() {
+            if (!currentUserId) return;
             try {
-                const expensesRef = collection(db, userPath, 'expenses');
+                const expensesRef = collection(db, 'users', currentUserId, 'expenses');
                 expensesUnsubscribe = onSnapshot(expensesRef, (snapshot) => {
                     appData.expenses = {};
                     snapshot.forEach((doc) => {
@@ -1519,7 +1363,7 @@
                     console.error("Error listening to expenses:", error);
                     showToast('Failed to sync expenses.', 'error');
                 });
-                const incomeRef = collection(db, userPath, 'income');
+                const incomeRef = collection(db, 'users', currentUserId, 'income');
                 incomeUnsubscribe = onSnapshot(incomeRef, (snapshot) => {
                     appData.income = {};
                     snapshot.forEach((doc) => {
@@ -1536,7 +1380,12 @@
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }
         }
+
         async function addExpenseToFirebase(expense) {
+            if (!currentUserId) {
+                showToast('Please wait for authentication...', 'warning');
+                return { success: false };
+            }
             try {
                 const btn = document.getElementById('submitBtn');
                 const spinner = document.getElementById('submitSpinner');
@@ -1544,7 +1393,7 @@
                 btn.disabled = true;
                 spinner.classList.remove('hidden');
                 btnText.textContent = 'Saving...';
-                const expenseRef = doc(collection(db, userPath, 'expenses'));
+                const expenseRef = doc(collection(db, 'users', currentUserId, 'expenses'));
                 await setDoc(expenseRef, {
                     amount: expense.amount,
                     category: expense.category,
@@ -1566,7 +1415,12 @@
                 return { success: false };
             }
         }
+
         async function updateExpenseInFirebase(id, expense) {
+            if (!currentUserId) {
+                showToast('Please wait for authentication...', 'warning');
+                return { success: false };
+            }
             try {
                 const btn = document.getElementById('submitBtn');
                 const spinner = document.getElementById('submitSpinner');
@@ -1574,7 +1428,7 @@
                 btn.disabled = true;
                 spinner.classList.remove('hidden');
                 btnText.textContent = 'Updating...';
-                await updateDoc(doc(db, userPath, 'expenses', id), {
+                await updateDoc(doc(db, 'users', currentUserId, 'expenses', id), {
                     amount: expense.amount,
                     category: expense.category,
                     description: expense.description || '',
@@ -1595,13 +1449,15 @@
                 return { success: false };
             }
         }
+
         async function deleteExpenseFromFirebase(id) {
+            if (!currentUserId) return { success: false };
             try {
                 const btn = document.getElementById('confirmConfirmBtn');
                 const spinner = document.getElementById('confirmSpinner');
                 btn.disabled = true;
                 spinner.classList.remove('hidden');
-                await deleteDoc(doc(db, userPath, 'expenses', id));
+                await deleteDoc(doc(db, 'users', currentUserId, 'expenses', id));
                 btn.disabled = false;
                 spinner.classList.add('hidden');
                 document.getElementById('confirmModal').classList.add('hidden');
@@ -1614,13 +1470,18 @@
                 return { success: false };
             }
         }
+
         async function saveIncomeToFirebase(month, amount) {
+            if (!currentUserId) {
+                showToast('Please wait for authentication...', 'warning');
+                return { success: false };
+            }
             try {
                 const btn = document.getElementById('saveIncomeBtn');
                 const spinner = document.getElementById('incomeSpinner');
                 btn.disabled = true;
                 spinner.classList.remove('hidden');
-                await setDoc(doc(db, userPath, 'income', month), {
+                await setDoc(doc(db, 'users', currentUserId, 'income', month), {
                     month: month,
                     amount: amount,
                     updatedAt: new Date().toISOString()
@@ -1637,17 +1498,26 @@
                 return { success: false };
             }
         }
+
         // --- Initialization ---
-        function initApp() {
-            initUI();
-            setupSettingsListener();
-            setupRealtimeListeners();
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.history-item')) {
-                    clearActiveCard();
-                }
-            });
-        }
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await initAuth();
+                initUI();
+                setupSettingsListener();
+                setupRealtimeListeners();
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.history-item')) {
+                        clearActiveCard();
+                    }
+                });
+            } catch (error) {
+                console.error("Initialization error:", error);
+                showToast('Failed to initialize app. Please refresh.', 'error');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        });
+
         function initUI() {
             const monthInput = document.getElementById('monthSelector');
             monthInput.value = currentMonth;
@@ -1660,6 +1530,7 @@
             document.getElementById('expenseForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
         }
+
         // --- Tab Navigation ---
         function switchTab(tabId) {
             clearActiveCard();
@@ -1677,6 +1548,7 @@
                 setTimeout(() => chartInstance.resize(), 100);
             }
         }
+
         // --- History Card Interaction ---
         function clearActiveCard() {
             activeCardId = null;
@@ -1684,6 +1556,7 @@
                 item.classList.remove('active');
             });
         }
+
         function toggleCardAction(id, event) {
             event.stopPropagation();
             if (activeCardId === id) {
@@ -1698,6 +1571,7 @@
                 });
             }
         }
+
         // --- Core Logic ---
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -1722,6 +1596,7 @@
                 }
             }
         }
+
         function deleteExpense(id) {
             showConfirm('Delete this expense?', async () => {
                 const result = await deleteExpenseFromFirebase(id);
@@ -1731,6 +1606,7 @@
                 }
             });
         }
+
         function editExpense(id) {
             const expenses = appData.expenses[currentMonth] || [];
             const expense = expenses.find(ex => ex.id === id);
@@ -1748,6 +1624,7 @@
             clearActiveCard();
             showToast('Edit mode activated.', 'info');
         }
+
         function resetForm() {
             document.getElementById('expenseForm').reset();
             document.getElementById('editId').value = '';
@@ -1759,12 +1636,14 @@
             document.getElementById('cancelEditBtn').classList.add('hidden');
             document.getElementById('category').value = settings.defaultCategory;
         }
+
         // --- Rendering ---
         function renderAll() {
             renderSummary();
             renderTable();
             renderChart();
         }
+
         function renderSummary() {
             const expenses = appData.expenses[currentMonth] || [];
             const income = appData.income[currentMonth] || 0;
@@ -1789,6 +1668,7 @@
             progressEl.style.width = `${percentage}%`;
             progressEl.className = `h-full transition-all duration-500 ${percentage < 20 ? 'bg-rose-500' : 'bg-emerald-500'}`;
         }
+
         function renderTable() {
             const desktopList = document.getElementById('desktopTransactionList');
             const mobileList = document.getElementById('mobileTransactionList');
@@ -1859,6 +1739,7 @@
                 mobileList.appendChild(mobileCard);
             });
         }
+
         function renderChart() {
             const ctx = document.getElementById('expenseChart').getContext('2d');
             const expenses = appData.expenses[currentMonth] || [];
@@ -1909,6 +1790,7 @@
                 }
             });
         }
+
         // --- Income Modal ---
         function openIncomeModal() {
             if (!settings.privacy.showIncome) return;
@@ -1918,9 +1800,11 @@
             modal.classList.remove('hidden');
             input.focus();
         }
+
         function closeIncomeModal() {
             document.getElementById('incomeModal').classList.add('hidden');
         }
+
         async function saveIncome() {
             const val = parseFloat(document.getElementById('incomeInput').value);
             const amount = isNaN(val) ? 0 : val;
@@ -1929,9 +1813,11 @@
                 showToast('Income saved!', 'success');
             }
         }
+
         document.getElementById('incomeModal').addEventListener('click', (e) => {
             if (e.target.id === 'incomeModal') closeIncomeModal();
         });
+
         // Make functions globally available
         window.switchTab = switchTab;
         window.switchSettingsSubTab = switchSettingsSubTab;
@@ -1949,14 +1835,7 @@
         window.updateDefaultCategory = updateDefaultCategory;
         window.updatePrivacySettings = updatePrivacySettings;
         window.showToast = showToast;
-        window.addPinDigit = addPinDigit;
-        window.clearPin = clearPin;
-        window.submitPin = submitPin;
-        window.logout = logout;
-        // Initialize app on DOM load
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSavedPIN();
-        });
+        window.closeWelcomeModal = closeWelcomeModal;
     </script>
 </body>
 
