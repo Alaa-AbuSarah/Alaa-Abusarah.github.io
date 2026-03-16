@@ -1,0 +1,2139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Expense Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fontsource Inter -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.18/index.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            hover: '#334155',
+                            input: '#1e293b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toast Animation - Always on top, Bottom Center */
+        @keyframes slideUpIn {
+            from {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUpOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(100%);
+            }
+        }
+
+        .toast-enter {
+            animation: slideUpIn 0.3s ease-out forwards;
+        }
+
+        .toast-exit {
+            animation: slideUpOut 0.3s ease-in forwards;
+        }
+
+        /* Custom Scrollbar */
+        .table-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .dark .table-container::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+
+        .dark .table-container::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+
+        /* Tab Active State */
+        .tab-btn.active {
+            color: #4f46e5;
+            background-color: #eef2ff;
+            border-bottom: 2px solid #4f46e5;
+        }
+
+        .dark .tab-btn.active {
+            background-color: #312e81;
+            color: #818cf8;
+            border-bottom-color: #818cf8;
+        }
+
+        .tab-btn {
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        /* Mobile-friendly tab scrolling */
+        @media (max-width: 640px) {
+            .tab-nav {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .tab-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .tab-btn {
+                flex: 0 0 auto;
+                min-width: max-content;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        /* Safe area for phones */
+        .safe-bottom {
+            padding-bottom: env(safe-area-inset-bottom, 1rem);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid rgba(79, 70, 229, 0.1);
+            border-left-color: #4f46e5;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        .dark .spinner {
+            border-color: rgba(99, 102, 241, 0.2);
+            border-left-color: #6366f1;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            z-index: 40;
+        }
+
+        .dark .loading-overlay {
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e1;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: #4f46e5;
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        .dark .toggle-slider {
+            background-color: #475569;
+        }
+
+        /* Settings Sub-tabs */
+        .settings-sub-tab {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .settings-sub-tab.active {
+            background-color: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .dark .settings-sub-tab.active {
+            background-color: #312e81;
+            color: #818cf8;
+        }
+
+        /* Color Swatch */
+        .color-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .color-swatch.selected {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+            transform: scale(1.1);
+        }
+
+        /* Z-Index Hierarchy */
+        #toastContainer {
+            z-index: 9999 !important;
+        }
+
+        #confirmModal {
+            z-index: 9998 !important;
+        }
+
+        #incomeModal {
+            z-index: 50 !important;
+        }
+
+        /* History Card/Row Interaction Styles */
+        .history-item {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .history-item:hover {
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .dark .history-item:hover {
+            background-color: rgba(79, 70, 229, 0.15);
+        }
+
+        .history-item.active {
+            background-color: rgba(79, 70, 229, 0.1) !important;
+        }
+
+        .dark .history-item.active {
+            background-color: rgba(79, 70, 229, 0.2) !important;
+        }
+
+        /* Card Info - Hide INSTANTLY when active (no transition) */
+        .card-info {
+            transition: opacity 0s, max-height 0s;
+            opacity: 1;
+            max-height: 500px;
+        }
+
+        .history-item.active .card-info {
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        /* Action Buttons - Hidden by default, shown when active */
+        .action-buttons {
+            display: none;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .history-item.active .action-buttons {
+            display: flex;
+            opacity: 1;
+            max-height: 100px;
+            margin-top: 1rem;
+        }
+
+        /* Save Indicator */
+        .save-indicator {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background-color: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            display: none;
+            z-index: 9997;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        .save-indicator.show {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Improved Dark Mode Styles */
+        .dark body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+
+        .dark .bg-white {
+            background-color: #1e293b !important;
+        }
+
+        .dark .bg-gray-50 {
+            background-color: #1e293b !important;
+        }
+
+        .dark .text-gray-900 {
+            color: #f1f5f9 !important;
+        }
+
+        .dark .text-gray-700 {
+            color: #e2e8f0 !important;
+        }
+
+        .dark .text-gray-600 {
+            color: #cbd5e1 !important;
+        }
+
+        .dark .text-gray-500 {
+            color: #94a3b8 !important;
+        }
+
+        .dark .border-gray-100 {
+            border-color: #334155 !important;
+        }
+
+        .dark .border-gray-200 {
+            border-color: #475569 !important;
+        }
+
+        .dark .border-gray-300 {
+            border-color: #475569 !important;
+        }
+
+        .dark .divide-gray-100>*+* {
+            border-color: #334155 !important;
+        }
+
+        .dark input,
+        .dark select {
+            background-color: #1e293b !important;
+            border-color: #475569 !important;
+            color: #f1f5f9 !important;
+        }
+
+        .dark input:focus,
+        .dark select:focus {
+            border-color: #6366f1 !important;
+            ring-color: #6366f1 !important;
+        }
+
+        .dark .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+        }
+
+        /* Login Screen Styles */
+        #loginScreen {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark #loginScreen {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: loginFadeIn 0.5s ease-out;
+        }
+
+        .dark .login-card {
+            background: #1e293b;
+        }
+
+        @keyframes loginFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 24px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .google-btn:active {
+            transform: translateY(0);
+        }
+
+        .dark .google-btn {
+            background: #334155;
+            border-color: #475569;
+            color: #f1f5f9;
+        }
+
+        .dark .google-btn:hover {
+            background: #475569;
+        }
+
+        .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .app-logo i {
+            font-size: 36px;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #4f46e5;
+        }
+
+        .auth-loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .auth-loading .spinner {
+            width: 48px;
+            height: 48px;
+            border-width: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-800 antialiased min-h-screen flex flex-col transition-colors duration-300">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="hidden">
+        <div class="login-card">
+            <div class="app-logo">
+                <i class="fa-solid fa-wallet"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Expense Tracker</h1>
+            <p class="text-gray-500 dark:text-gray-400 text-center mb-8">Track your spending with ease</p>
+            <div id="authLoading" class="auth-loading hidden">
+                <div class="spinner"></div>
+                <p class="text-gray-600 dark:text-gray-300 font-medium">Signing in...</p>
+            </div>
+            <button id="googleSignInBtn" class="google-btn" onclick="handleGoogleSignIn()">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path fill="#4285F4"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05"
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                    <path fill="#EA4335"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                </svg>
+                <span>Continue with Google</span>
+            </button>
+            <p class="text-xs text-gray-400 dark:text-gray-500 text-center mt-6">
+                By continuing, you agree to our Terms of Service and Privacy Policy
+            </p>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay fixed inset-0 z-40 flex items-center justify-center hidden">
+        <div class="text-center">
+            <div class="spinner mx-auto mb-3"></div>
+            <p class="text-gray-600 dark:text-gray-300 font-medium">Loading your data...</p>
+        </div>
+    </div>
+
+    <!-- Save Indicator -->
+    <div id="saveIndicator" class="save-indicator">
+        <i class="fa-solid fa-check-circle"></i>
+        <span>Settings saved</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white dark:bg-dark-card shadow-sm sticky top-0 z-30 transition-colors duration-300">
+        <div class="max-w-3xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div
+                class="h-12 sm:h-14 flex items-center justify-between border-b border-gray-100 dark:border-dark-border">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <div class="app-logo" style="width: 36px; height: 36px; border-radius: 10px; margin: 0;">
+                            <i class="fa-solid fa-wallet" style="font-size: 18px;"></i>
+                        </div>
+                        <h1 class="text-lg font-bold text-gray-900 dark:text-white sm:block">Expense Tracker</h1>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-medium text-gray-500 dark:text-gray-400 hidden xs:block">Month:</label>
+                    <input type="month" id="monthSelector"
+                        class="border border-gray-300 dark:border-dark-border rounded-md px-2 sm:px-3 py-1.5 text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm bg-white dark:bg-dark-input dark:text-gray-200">
+                </div>
+            </div>
+            <!-- User Info & Logout -->
+            <div class="flex items-center justify-between py-2 border-b border-gray-100 dark:border-dark-border">
+                <div class="flex items-center gap-2">
+                    <img id="userAvatar" src="" alt="User" class="user-avatar hidden sm:block">
+                    <div>
+                        <p id="userName" class="text-sm font-semibold text-gray-900 dark:text-white">Loading...</p>
+                        <p id="userEmail" class="text-xs text-gray-500 dark:text-gray-400"></p>
+                    </div>
+                </div>
+                <button onclick="handleSignOut()"
+                    class="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Sign Out</span>
+                </button>
+            </div>
+            <!-- Main Tab Navigation - Horizontally Scrollable on Mobile -->
+            <nav class="tab-nav flex space-x-1 sm:space-x-2 pb-0" aria-label="Tabs">
+                <button onclick="switchTab('tab-add')" id="btn-tab-add"
+                    class="tab-btn active flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center min-h-[48px]">
+                    <i class="fa-solid fa-plus mr-1 sm:mr-2"></i><span class="hidden sm:inline">Add Expense</span><span
+                        class="sm:hidden">Add</span>
+                </button>
+                <button onclick="switchTab('tab-transactions')" id="btn-tab-transactions"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-list mr-1 sm:mr-2"></i><span class="hidden sm:inline">Transactions</span><span
+                        class="sm:hidden">History</span>
+                </button>
+                <button onclick="switchTab('tab-overview')" id="btn-tab-overview"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-chart-pie mr-1 sm:mr-2"></i><span
+                        class="hidden sm:inline">Overview</span><span class="sm:hidden">Stats</span>
+                </button>
+                <button onclick="switchTab('tab-settings')" id="btn-tab-settings"
+                    class="tab-btn flex-1 whitespace-nowrap py-3 sm:py-4 px-2 sm:px-4 border-b-2 font-semibold text-xs sm:text-sm text-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 min-h-[48px]">
+                    <i class="fa-solid fa-gear mr-1 sm:mr-2"></i><span class="hidden sm:inline">Settings</span><span
+                        class="sm:hidden">Settings</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-3xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 w-full safe-bottom pb-20 sm:pb-8">
+        <!-- TAB 1: ADD EXPENSE -->
+        <div id="tab-add" class="tab-content fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 max-w-lg mx-auto transition-colors duration-300">
+                <div class="text-center mb-5 sm:mb-6">
+                    <h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">New Expense</h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-xs sm:text-sm mt-1">Enter details below to track
+                        your spending.</p>
+                </div>
+                <form id="expenseForm" class="space-y-4">
+                    <input type="hidden" id="editId">
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Amount
+                            (<span id="currencySymbolDisplay">$</span>)</label>
+                        <div class="relative">
+                            <input type="number" id="amount" step="0.01" required
+                                class="w-full px-4 py-3.5 sm:py-4 text-lg border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-medium bg-white dark:bg-dark-input dark:text-white text-left"
+                                placeholder="0.00" inputmode="decimal">
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Category</label>
+                        <select id="category"
+                            class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-gray-200 text-base">
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-1.5">Date</label>
+                        <input type="date" id="date" required
+                            class="w-full px-4 py-3.5 sm:py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all bg-white dark:bg-dark-input dark:text-white text-base">
+                    </div>
+                    <div class="pt-2 flex gap-3">
+                        <button type="button" id="cancelEditBtn"
+                            class="hidden flex-1 px-4 py-3.5 sm:py-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-colors text-base min-h-[48px]">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitBtn"
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold py-3.5 sm:py-4 rounded-xl transition-colors shadow-lg shadow-indigo-200 dark:shadow-none text-base min-h-[48px] flex items-center justify-center gap-2">
+                            <span id="submitBtnText">Add Expense</span>
+                            <div id="submitSpinner" class="spinner hidden"
+                                style="width: 18px; height: 18px; border-width: 2px;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 2: TRANSACTIONS -->
+        <div id="tab-transactions" class="tab-content hidden fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
+                <div
+                    class="p-4 sm:p-6 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50 rounded-t-xl">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">History</h2>
+                    <span
+                        class="text-xs font-medium px-2.5 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full"
+                        id="transactionCount">0 items</span>
+                </div>
+                <!-- Desktop View (No Headers) -->
+                <div class="hidden sm:block overflow-x-auto table-container">
+                    <div id="desktopTransactionList" class="divide-y divide-gray-100 dark:divide-dark-border">
+                        <!-- Items populated dynamically -->
+                    </div>
+                </div>
+                <!-- Mobile View -->
+                <div class="sm:hidden divide-y divide-gray-100 dark:divide-dark-border" id="mobileTransactionList">
+                </div>
+                <div id="emptyState"
+                    class="hidden flex-col items-center justify-center py-12 sm:py-16 text-center px-4">
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-full mb-4">
+                        <i class="fa-solid fa-receipt text-2xl text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 dark:text-gray-400 font-medium">No transactions found.</p>
+                    <p class="text-gray-400 dark:text-gray-500 text-sm mt-1">Switch to "Add Expense" to create one.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: OVERVIEW -->
+        <div id="tab-overview" class="tab-content hidden fade-in space-y-4 sm:space-y-6">
+            <section class="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+                <div class="income-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="incomeCard" onclick="openIncomeModal()">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fa-solid fa-arrow-trend-up text-2xl sm:text-4xl text-emerald-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Income</p>
+                        <div class="flex items-end gap-1 sm:gap-2">
+                            <span class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white"
+                                id="displayIncome">$0.00</span>
+                            <i class="fa-solid fa-pen text-xs text-gray-400 hidden sm:block" id="incomeEditIcon"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="expenses-card bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="expensesCard">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
+                        <i class="fa-solid fa-arrow-trend-down text-2xl sm:text-4xl text-rose-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Expenses</p>
+                        <h3 class="text-base sm:text-2xl font-bold text-gray-900 dark:text-white" id="displayExpenses">
+                            $0.00</h3>
+                    </div>
+                </div>
+                <div class="balance-card col-span-2 sm:col-span-1 bg-white dark:bg-dark-card rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100 dark:border-dark-border relative overflow-hidden transition-colors duration-300"
+                    id="balanceCard">
+                    <div class="absolute right-0 top-0 p-2 sm:p-3 opacity-10">
+                        <i class="fa-solid fa-scale-balanced text-2xl sm:text-4xl text-blue-500"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <p
+                            class="text-[10px] sm:text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                            Balance</p>
+                        <h3 class="text-base sm:text-2xl font-bold" id="displayBalance">$0.00</h3>
+                        <!-- Balance Progress Container - Will be hidden when balance is hidden -->
+                        <div id="balanceProgressContainer"
+                            class="mt-2 h-1.5 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                            <div id="balanceProgress" class="h-full bg-emerald-500 transition-all duration-500"
+                                style="width: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border p-4 sm:p-6 transition-colors duration-300">
+                <h2 class="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 text-center">
+                    Spending Breakdown</h2>
+                <div class="relative h-48 sm:h-64 w-full max-w-md mx-auto">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+                <div id="chartEmptyState" class="hidden text-center py-8">
+                    <p class="text-gray-400 text-sm">No expense data to visualize.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SETTINGS -->
+        <div id="tab-settings" class="tab-content hidden fade-in">
+            <div
+                class="bg-white dark:bg-dark-card rounded-xl shadow-sm border border-gray-100 dark:border-dark-border transition-colors duration-300">
+                <!-- Settings Sub-tabs -->
+                <div class="border-b border-gray-100 dark:border-dark-border overflow-x-auto">
+                    <div class="flex space-x-1 p-2 min-w-max">
+                        <button onclick="switchSettingsSubTab('settings-general')" id="btn-settings-general"
+                            class="settings-sub-tab active px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap">
+                            <i class="fa-solid fa-sliders mr-2"></i>General
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-categories')" id="btn-settings-categories"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-tags mr-2"></i>Categories
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-currency')" id="btn-settings-currency"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-coins mr-2"></i>Currency
+                        </button>
+                        <button onclick="switchSettingsSubTab('settings-privacy')" id="btn-settings-privacy"
+                            class="settings-sub-tab px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap text-gray-500 dark:text-gray-400">
+                            <i class="fa-solid fa-shield-halved mr-2"></i>Privacy
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4 sm:p-6">
+                    <!-- General Section -->
+                    <div id="settings-general" class="settings-section fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">General Settings</h4>
+                        <div class="space-y-6">
+                            <!-- Dark Mode -->
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Dark Mode</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Switch between light and
+                                        dark theme</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <!-- Default Category Only -->
+                            <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <label
+                                        class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Default
+                                        Category</label>
+                                    <select id="defaultCategory" onchange="updateDefaultCategory()"
+                                        class="w-full px-3 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
+                                    </select>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                        <i class="fa-solid fa-info-circle mr-1"></i>
+                                        This category will be pre-selected when adding new expenses
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Categories Section -->
+                    <div id="settings-categories" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Manage Categories</h4>
+                        <!-- Add New Category Form -->
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl mb-6">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Add
+                                New Category</label>
+                            <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                                <input type="text" id="newCategoryName" placeholder="Category Name"
+                                    class="flex-1 px-4 py-2 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm bg-white dark:bg-dark-input dark:text-white">
+                                <button onclick="addNewCategory()"
+                                    class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-plus"></i> Add
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-xs text-gray-500 dark:text-gray-400 mr-2">Select Color:</span>
+                                <div class="color-swatch selected" style="background-color: #f97316;"
+                                    onclick="selectColor('#f97316', this)"></div>
+                                <div class="color-swatch" style="background-color: #3b82f6;"
+                                    onclick="selectColor('#3b82f6', this)"></div>
+                                <div class="color-swatch" style="background-color: #ec4899;"
+                                    onclick="selectColor('#ec4899', this)"></div>
+                                <div class="color-swatch" style="background-color: #ef4444;"
+                                    onclick="selectColor('#ef4444', this)"></div>
+                                <div class="color-swatch" style="background-color: #a855f7;"
+                                    onclick="selectColor('#a855f7', this)"></div>
+                                <div class="color-swatch" style="background-color: #14b8a6;"
+                                    onclick="selectColor('#14b8a6', this)"></div>
+                                <div class="color-swatch" style="background-color: #64748b;"
+                                    onclick="selectColor('#64748b', this)"></div>
+                                <div class="color-swatch" style="background-color: #eab308;"
+                                    onclick="selectColor('#eab308', this)"></div>
+                                <div class="color-swatch" style="background-color: #22c55e;"
+                                    onclick="selectColor('#22c55e', this)"></div>
+                                <div class="color-swatch" style="background-color: #8b5cf6;"
+                                    onclick="selectColor('#8b5cf6', this)"></div>
+                                <div class="color-swatch" style="background-color: #f43f5e;"
+                                    onclick="selectColor('#f43f5e', this)"></div>
+                                <div class="color-swatch" style="background-color: #06b6d4;"
+                                    onclick="selectColor('#06b6d4', this)"></div>
+                                <div class="color-swatch" style="background-color: #84cc16;"
+                                    onclick="selectColor('#84cc16', this)"></div>
+                                <div class="color-swatch" style="background-color: #f59e0b;"
+                                    onclick="selectColor('#f59e0b', this)"></div>
+                                <div class="color-swatch" style="background-color: #6366f1;"
+                                    onclick="selectColor('#6366f1', this)"></div>
+                                <div class="color-swatch" style="background-color: #10b981;"
+                                    onclick="selectColor('#10b981', this)"></div>
+                                <div class="color-swatch" style="background-color: #dc2626;"
+                                    onclick="selectColor('#dc2626', this)"></div>
+                                <div class="color-swatch" style="background-color: #7c3aed;"
+                                    onclick="selectColor('#7c3aed', this)"></div>
+                                <div class="color-swatch" style="background-color: #0891b2;"
+                                    onclick="selectColor('#0891b2', this)"></div>
+                                <div class="color-swatch" style="background-color: #be185d;"
+                                    onclick="selectColor('#be185d', this)"></div>
+                            </div>
+                        </div>
+                        <!-- Categories List -->
+                        <div id="categoriesList" class="space-y-3">
+                            <!-- Categories populated dynamically -->
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-4">
+                            <i class="fa-solid fa-info-circle mr-1"></i>
+                            Changes are saved automatically.
+                        </p>
+                    </div>
+                    <!-- Currency Section - Mobile Friendly -->
+                    <div id="settings-currency" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Currency Settings</h4>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                            <label
+                                class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Currency
+                                Symbol</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <input type="text" id="currencyInput" maxlength="5"
+                                    class="flex-1 px-4 py-3 border border-gray-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-lg font-medium bg-white dark:bg-dark-input dark:text-white text-center w-full sm:w-auto"
+                                    value="$">
+                                <button onclick="saveCurrencyFromInput()"
+                                    class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-save"></i> Save
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">Enter any symbol or text (e.g., $,
+                                €, £, BTC, Points)</p>
+                        </div>
+                    </div>
+                    <!-- Privacy Section -->
+                    <div id="settings-privacy" class="settings-section hidden fade-in">
+                        <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Privacy Options</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Income</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display income amounts in
+                                        overview</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showIncomeToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Expenses</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display expense amounts in
+                                        overview</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showExpensesToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">Show Balance</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Display remaining balance
+                                    </p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="showBalanceToggle" checked
+                                        onchange="updatePrivacySettings()">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <!-- Income Modal (z-index 50) -->
+    <div id="incomeModal"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white dark:bg-dark-card rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-md p-5 sm:p-6 transform transition-all">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Set Monthly Income</h3>
+                <button onclick="closeIncomeModal()"
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-2">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">This helps calculate your remaining balance.</p>
+            <div class="mb-6">
+                <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">Income Amount
+                    (<span id="incomeSymbolDisplay">$</span>)</label>
+                <div class="relative">
+                    <input type="number" id="incomeInput" step="0.01"
+                        class="w-full px-4 py-4 border border-gray-300 dark:border-dark-border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-xl font-medium bg-white dark:bg-dark-input dark:text-white text-left"
+                        inputmode="decimal">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeIncomeModal()"
+                    class="flex-1 px-4 py-3.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-semibold transition-colors min-h-[48px]">Cancel</button>
+                <button onclick="saveIncome()" id="saveIncomeBtn"
+                    class="flex-1 px-4 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-indigo-200 dark:shadow-none min-h-[48px] flex items-center justify-center gap-2">
+                    <span>Save</span>
+                    <div id="incomeSpinner" class="spinner hidden"
+                        style="width: 18px; height: 18px; border-width: 2px;"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal (z-index 9998 - Always on Top) -->
+    <div id="confirmModal"
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-[9998] hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div
+            class="bg-white dark:bg-dark-card rounded-t-2xl sm:rounded-xl shadow-2xl w-full max-w-md p-5 sm:p-6 transform transition-all scale-100">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-rose-600 dark:text-rose-400"></i>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Confirm Action</h3>
+            </div>
+            <p id="confirmMessage" class="text-sm text-gray-600 dark:text-gray-300 mb-6">Are you sure you want to
+                proceed?</p>
+            <div class="flex gap-3">
+                <button id="confirmCancelBtn"
+                    class="flex-1 px-4 py-3.5 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-semibold transition-colors min-h-[48px]">Cancel</button>
+                <button id="confirmConfirmBtn"
+                    class="flex-1 px-4 py-3.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg shadow-rose-200 dark:shadow-none min-h-[48px] flex items-center justify-center gap-2">
+                    <span>Confirm</span>
+                    <div id="confirmSpinner" class="spinner hidden"
+                        style="width: 18px; height: 18px; border-width: 2px;"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container - ALWAYS ON TOP - BOTTOM CENTER (z-index 9999) -->
+    <div id="toastContainer"
+        class="fixed bottom-4 sm:bottom-6 left-0 right-0 z-[9999] flex flex-col items-center gap-2 px-4 pointer-events-none safe-bottom">
+    </div>
+
+    <!-- Firebase SDKs & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc, getDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4csDwxq4OtuT5jggqhEObgoehX3rqfHM",
+            authDomain: "expense-tracker-9f575.firebaseapp.com",
+            projectId: "expense-tracker-9f575",
+            storageBucket: "expense-tracker-9f575.firebasestorage.app",
+            messagingSenderId: "1002336839763",
+            appId: "1:1002336839763:web:cbe18449cd329a682a7ea6",
+            measurementId: "G-YQ04HBVBCP"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+
+        // Add custom parameters to the provider
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
+        // --- State Management ---
+        let appData = { income: {}, expenses: {} };
+        let settings = {
+            categories: [
+                { name: 'Food', color: '#f97316' },
+                { name: 'Transport', color: '#3b82f6' },
+                { name: 'Shopping', color: '#ec4899' },
+                { name: 'Bills', color: '#ef4444' },
+                { name: 'Entertainment', color: '#a855f7' },
+                { name: 'Health', color: '#14b8a6' },
+                { name: 'Other', color: '#64748b' }
+            ],
+            currency: '$',
+            darkMode: false,
+            defaultCategory: 'Food',
+            privacy: {
+                showIncome: true,
+                showExpenses: true,
+                showBalance: true
+            }
+        };
+        let currentMonth = new Date().toISOString().slice(0, 7);
+        let chartInstance = null;
+        let expensesUnsubscribe = null;
+        let incomeUnsubscribe = null;
+        let settingsUnsubscribe = null;
+        let isDataLoaded = false;
+        let selectedColor = '#f97316';
+        let activeCardId = null;
+        let saveTimeout = null;
+        let currentUser = null;
+        let authInitialized = false;
+
+        // --- Authentication Functions ---
+        async function handleGoogleSignIn() {
+            const authLoading = document.getElementById('authLoading');
+            const signInBtn = document.getElementById('googleSignInBtn');
+
+            try {
+                // Show loading state
+                authLoading.classList.remove('hidden');
+                signInBtn.classList.add('hidden');
+
+                // Try popup first
+                let result;
+                try {
+                    result = await signInWithPopup(auth, provider);
+                } catch (popupError) {
+                    // If popup is blocked, fallback to redirect
+                    if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/popup-closed-by-user') {
+                        showToast('Popup blocked, using redirect...', 'info', 2000);
+                        await signInWithRedirect(auth, provider);
+                        return;
+                    }
+                    throw popupError;
+                }
+
+                // Handle successful sign in
+                await handleSuccessfulAuth(result.user);
+            } catch (error) {
+                console.error("Sign in error:", error);
+                authLoading.classList.add('hidden');
+                signInBtn.classList.remove('hidden');
+
+                // Handle specific error cases
+                if (error.code === 'auth/popup-closed-by-user') {
+                    showToast('Sign in cancelled', 'info', 3000);
+                } else if (error.code === 'auth/network-request-failed') {
+                    showToast('Network error. Please check your connection.', 'error', 5000);
+                } else if (error.code === 'auth/too-many-requests') {
+                    showToast('Too many attempts. Please try again later.', 'error', 5000);
+                } else {
+                    showToast('Sign in failed: ' + error.message, 'error', 5000);
+                }
+            }
+        }
+
+        async function handleSuccessfulAuth(user) {
+            currentUser = user;
+            showToast(`Welcome, ${user.displayName || 'User'}!`, 'success', 3000);
+            await initializeUserData(user);
+        }
+
+        async function handleSignOut() {
+            showConfirm('Are you sure you want to sign out?', async () => {
+                try {
+                    await signOut(auth);
+                    currentUser = null;
+                    showToast('Signed out successfully', 'success', 2000);
+                    // Reload page to show login screen
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } catch (error) {
+                    console.error("Sign out error:", error);
+                    showToast('Sign out failed', 'error', 3000);
+                }
+            });
+        }
+
+        async function initializeUserData(user) {
+            try {
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (!userSnap.exists()) {
+                    // Create new user document with default data
+                    const batch = writeBatch(db);
+
+                    // Create user profile document
+                    batch.set(userRef, {
+                        uid: user.uid,
+                        email: user.email,
+                        displayName: user.displayName,
+                        photoURL: user.photoURL,
+                        createdAt: new Date().toISOString(),
+                        lastLogin: new Date().toISOString()
+                    });
+
+                    // Create settings document
+                    const settingsRef = doc(db, 'users', user.uid, 'userSettings', 'app_settings');
+                    batch.set(settingsRef, settings);
+
+                    // Create empty expenses collection (will be created on first expense)
+                    // Create empty income collection (will be created on first income)
+
+                    await batch.commit();
+                    showToast('Account created successfully!', 'success', 2000);
+                } else {
+                    // Update last login
+                    await updateDoc(userRef, {
+                        lastLogin: new Date().toISOString()
+                    });
+
+                    // Load existing settings
+                    const settingsRef = doc(db, 'users', user.uid, 'userSettings', 'app_settings');
+                    const settingsSnap = await getDoc(settingsRef);
+                    if (settingsSnap.exists()) {
+                        const loadedSettings = settingsSnap.data();
+                        settings = { ...settings, ...loadedSettings };
+                    }
+                }
+
+                // Update UI with user info
+                updateUserInfo(user);
+
+                // Setup listeners for user data
+                setupUserRealtimeListeners();
+
+                // Hide login screen, show app
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('loadingOverlay').classList.remove('hidden');
+
+                // Apply settings and render
+                applySettings();
+
+            } catch (error) {
+                console.error("Error initializing user data:", error);
+                showToast('Failed to load user data', 'error', 5000);
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }
+        }
+
+        function updateUserInfo(user) {
+            const userName = document.getElementById('userName');
+            const userEmail = document.getElementById('userEmail');
+            const userAvatar = document.getElementById('userAvatar');
+
+            userName.textContent = user.displayName || 'User';
+            userEmail.textContent = user.email;
+
+            if (user.photoURL) {
+                userAvatar.src = user.photoURL;
+                userAvatar.classList.remove('hidden');
+            } else {
+                userAvatar.classList.add('hidden');
+            }
+        }
+
+        function setupUserRealtimeListeners() {
+            if (!currentUser) return;
+
+            // Settings listener
+            const settingsRef = doc(db, 'users', currentUser.uid, 'userSettings', 'app_settings');
+            settingsUnsubscribe = onSnapshot(settingsRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    settings = { ...settings, ...data };
+                    applySettings();
+                }
+                if (!isDataLoaded) {
+                    isDataLoaded = true;
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    showToast('Data loaded successfully!', 'success', 2000);
+                }
+            }, (error) => {
+                console.error("Error loading settings:", error);
+                showToast('Failed to load settings. Using defaults.', 'warning');
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            });
+
+            // Expenses listener
+            const expensesRef = collection(db, 'users', currentUser.uid, 'expenses');
+            expensesUnsubscribe = onSnapshot(expensesRef, (snapshot) => {
+                appData.expenses = {};
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const month = data.month;
+                    if (!appData.expenses[month]) appData.expenses[month] = [];
+                    appData.expenses[month].push({ id: doc.id, ...data });
+                });
+                Object.keys(appData.expenses).forEach(month => {
+                    appData.expenses[month].sort((a, b) => new Date(b.date) - new Date(a.date));
+                });
+                renderAll();
+            }, (error) => {
+                console.error("Error listening to expenses:", error);
+                showToast('Failed to sync expenses.', 'error');
+            });
+
+            // Income listener
+            const incomeRef = collection(db, 'users', currentUser.uid, 'income');
+            incomeUnsubscribe = onSnapshot(incomeRef, (snapshot) => {
+                appData.income = {};
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    appData.income[data.month] = data.amount;
+                });
+                renderSummary();
+            }, (error) => {
+                console.error("Error listening to income:", error);
+            });
+        }
+
+        // --- Show Save Indicator ---
+        function showSaveIndicator() {
+            const indicator = document.getElementById('saveIndicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // --- Debounced Save to Firebase ---
+        function debouncedSaveSettings() {
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+            }
+            saveTimeout = setTimeout(() => {
+                saveSettingsToFirebase();
+            }, 500);
+        }
+
+        // --- Toast Notifications - Bottom Center ---
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const typeConfig = {
+                success: { icon: 'fa-circle-check', bg: 'bg-emerald-500', iconBg: 'bg-emerald-600' },
+                error: { icon: 'fa-circle-xmark', bg: 'bg-rose-500', iconBg: 'bg-rose-600' },
+                info: { icon: 'fa-circle-info', bg: 'bg-blue-500', iconBg: 'bg-blue-600' },
+                warning: { icon: 'fa-triangle-exclamation', bg: 'bg-amber-500', iconBg: 'bg-amber-600' }
+            };
+            const config = typeConfig[type] || typeConfig.info;
+
+            toast.className = `toast-enter w-auto max-w-sm flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl text-white ${config.bg} pointer-events-auto`;
+            toast.innerHTML = `
+<div class="${config.iconBg} w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">
+<i class="fa-solid ${config.icon} text-sm"></i>
+</div>
+<p class="text-sm font-medium flex-1 text-center">${message}</p>
+<button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white p-1 flex-shrink-0">
+<i class="fa-solid fa-times text-sm"></i>
+</button>
+`;
+            container.appendChild(toast);
+            if (duration > 0) {
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.classList.remove('toast-enter');
+                        toast.classList.add('toast-exit');
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, duration);
+            }
+            return toast;
+        }
+
+        // --- Confirmation Modal ---
+        function showConfirm(message, onConfirm) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmMessage').textContent = message;
+            modal.classList.remove('hidden');
+            const confirmBtn = document.getElementById('confirmConfirmBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            const newCancelBtn = cancelBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+            newConfirmBtn.addEventListener('click', () => {
+                if (onConfirm) onConfirm();
+                modal.classList.add('hidden');
+            });
+            newCancelBtn.addEventListener('click', () => { modal.classList.add('hidden'); });
+        }
+
+        document.getElementById('confirmModal').addEventListener('click', (e) => {
+            if (e.target.id === 'confirmModal') document.getElementById('confirmModal').classList.add('hidden');
+        });
+
+        // --- Firebase Settings Operations ---
+        async function saveSettingsToFirebase() {
+            if (!currentUser) return;
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid, 'userSettings', 'app_settings'), settings);
+                showSaveIndicator();
+            } catch (error) {
+                console.error("Error saving settings:", error);
+                showToast('Failed to save settings.', 'error');
+            }
+        }
+
+        // --- Apply Settings to UI ---
+        function applySettings() {
+            if (settings.darkMode) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('darkModeToggle').checked = true;
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('darkModeToggle').checked = false;
+            }
+            updateCurrencyDisplay(settings.currency);
+            document.getElementById('currencyInput').value = settings.currency;
+            document.getElementById('showIncomeToggle').checked = settings.privacy.showIncome;
+            document.getElementById('showExpensesToggle').checked = settings.privacy.showExpenses;
+            document.getElementById('showBalanceToggle').checked = settings.privacy.showBalance;
+            applyPrivacySettings();
+            document.getElementById('defaultCategory').value = settings.defaultCategory;
+            updateCategoryDropdowns();
+            renderCategoriesList();
+            if (isDataLoaded) renderAll();
+        }
+
+        function updateCurrencyDisplay(currency) {
+            document.getElementById('currencySymbolDisplay').textContent = currency;
+            document.getElementById('incomeSymbolDisplay').textContent = currency;
+        }
+
+        function applyPrivacySettings() {
+            const incomeCard = document.getElementById('incomeCard');
+            const expensesCard = document.getElementById('expensesCard');
+            const balanceCard = document.getElementById('balanceCard');
+            const incomeEditIcon = document.getElementById('incomeEditIcon');
+            const balanceProgressContainer = document.getElementById('balanceProgressContainer');
+
+            if (!settings.privacy.showIncome) {
+                incomeCard.classList.add('card-hidden', 'not-clickable');
+                incomeEditIcon.classList.add('hidden');
+            } else {
+                incomeCard.classList.remove('card-hidden', 'not-clickable');
+                incomeEditIcon.classList.remove('hidden');
+            }
+
+            if (!settings.privacy.showExpenses) {
+                expensesCard.classList.add('card-hidden');
+            } else {
+                expensesCard.classList.remove('card-hidden');
+            }
+
+            if (!settings.privacy.showBalance) {
+                balanceCard.classList.add('card-hidden', 'not-clickable');
+                balanceProgressContainer.classList.add('hidden');
+            } else {
+                balanceCard.classList.remove('card-hidden', 'not-clickable');
+                balanceProgressContainer.classList.remove('hidden');
+            }
+        }
+
+        function updateCategoryDropdowns() {
+            const categorySelect = document.getElementById('category');
+            const defaultCategorySelect = document.getElementById('defaultCategory');
+            categorySelect.innerHTML = '';
+            defaultCategorySelect.innerHTML = '';
+            settings.categories.forEach(cat => {
+                const option1 = document.createElement('option');
+                option1.value = cat.name;
+                option1.textContent = cat.name;
+                categorySelect.appendChild(option1);
+                const option2 = document.createElement('option');
+                option2.value = cat.name;
+                option2.textContent = cat.name;
+                defaultCategorySelect.appendChild(option2);
+            });
+            categorySelect.value = settings.defaultCategory;
+            defaultCategorySelect.value = settings.defaultCategory;
+        }
+
+        // --- Settings Sub-tabs Navigation ---
+        function switchSettingsSubTab(tabId) {
+            document.querySelectorAll('.settings-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.settings-sub-tab').forEach(el => {
+                el.classList.remove('active');
+                el.classList.add('text-gray-500', 'dark:text-gray-400');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.add('active');
+            btn.classList.remove('text-gray-500', 'dark:text-gray-400');
+        }
+
+        // --- Categories Logic ---
+        function selectColor(color, element) {
+            selectedColor = color;
+            document.querySelectorAll('.color-swatch').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function renderCategoriesList() {
+            const list = document.getElementById('categoriesList');
+            list.innerHTML = '';
+            settings.categories.forEach((cat, index) => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-3 p-3 bg-white dark:bg-dark-card rounded-lg border border-gray-200 dark:border-dark-border shadow-sm";
+                div.innerHTML = `
+<div class="w-8 h-8 rounded-full flex-shrink-0" style="background-color: ${cat.color}"></div>
+<input type="text" value="${cat.name}" onchange="updateCategoryName(${index}, this.value)" class="flex-1 bg-transparent border-b border-gray-200 dark:border-dark-border focus:border-indigo-500 outline-none text-sm font-medium text-gray-700 dark:text-gray-200 px-2 py-1">
+<button onclick="removeCategory(${index})" class="text-rose-500 hover:text-rose-700 p-2 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors" title="Delete">
+<i class="fa-solid fa-trash text-sm"></i>
+</button>
+`;
+                list.appendChild(div);
+            });
+        }
+
+        function addNewCategory() {
+            const nameInput = document.getElementById('newCategoryName');
+            const name = nameInput.value.trim();
+            if (!name) {
+                showToast('Please enter a category name', 'warning');
+                return;
+            }
+            if (settings.categories.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+                showToast('Category already exists', 'warning');
+                return;
+            }
+            settings.categories.push({ name: name, color: selectedColor });
+            nameInput.value = '';
+            renderCategoriesList();
+            updateCategoryDropdowns();
+            debouncedSaveSettings();
+            showToast('Category added!', 'success');
+        }
+
+        function updateCategoryName(index, newName) {
+            const cleanName = newName.trim();
+            if (!cleanName) return;
+            if (settings.categories.some((c, i) => i !== index && c.name.toLowerCase() === cleanName.toLowerCase())) {
+                showToast('Category name already exists', 'warning');
+                renderCategoriesList();
+                return;
+            }
+            settings.categories[index].name = cleanName;
+            updateCategoryDropdowns();
+            debouncedSaveSettings();
+        }
+
+        function removeCategory(index) {
+            const cat = settings.categories[index];
+            showConfirm(`Delete category "${cat.name}"?`, () => {
+                settings.categories.splice(index, 1);
+                if (settings.defaultCategory === cat.name) {
+                    settings.defaultCategory = settings.categories[0]?.name || 'Other';
+                }
+                renderCategoriesList();
+                updateCategoryDropdowns();
+                debouncedSaveSettings();
+                showToast('Category deleted', 'success');
+            });
+        }
+
+        // --- Currency Logic ---
+        function saveCurrencyFromInput() {
+            const input = document.getElementById('currencyInput');
+            const val = input.value.trim() || '$';
+            settings.currency = val;
+            updateCurrencyDisplay(val);
+            debouncedSaveSettings();
+            showToast('Currency updated', 'success');
+        }
+
+        // --- General & Privacy Logic ---
+        function toggleDarkMode() {
+            settings.darkMode = document.getElementById('darkModeToggle').checked;
+            applySettings();
+            debouncedSaveSettings();
+            showToast(settings.darkMode ? 'Dark mode enabled' : 'Light mode enabled', 'info', 2000);
+        }
+
+        function updateDefaultCategory() {
+            const newDefault = document.getElementById('defaultCategory').value;
+            settings.defaultCategory = newDefault;
+            document.getElementById('category').value = newDefault;
+            debouncedSaveSettings();
+            showToast('Default category updated', 'success', 1500);
+        }
+
+        function updatePrivacySettings() {
+            settings.privacy.showIncome = document.getElementById('showIncomeToggle').checked;
+            settings.privacy.showExpenses = document.getElementById('showExpensesToggle').checked;
+            settings.privacy.showBalance = document.getElementById('showBalanceToggle').checked;
+            applyPrivacySettings();
+            renderSummary();
+            debouncedSaveSettings();
+            showToast('Privacy settings updated', 'success', 1500);
+        }
+
+        // --- Firebase Data Operations ---
+        async function addExpenseToFirebase(expense) {
+            if (!currentUser) {
+                showToast('Please sign in first', 'error');
+                return { success: false };
+            }
+            try {
+                const btn = document.getElementById('submitBtn');
+                const spinner = document.getElementById('submitSpinner');
+                const btnText = document.getElementById('submitBtnText');
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
+                btnText.textContent = 'Saving...';
+
+                const expenseRef = doc(collection(db, 'users', currentUser.uid, 'expenses'));
+                await setDoc(expenseRef, {
+                    amount: expense.amount,
+                    category: expense.category,
+                    description: expense.description || '',
+                    date: expense.date,
+                    month: expense.month,
+                    createdAt: new Date().toISOString()
+                });
+
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                btnText.textContent = 'Add Expense';
+                return { success: true };
+            } catch (error) {
+                console.error("Error adding expense:", error);
+                showToast('Failed to add expense.', 'error');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitSpinner').classList.add('hidden');
+                document.getElementById('submitBtnText').textContent = 'Add Expense';
+                return { success: false };
+            }
+        }
+
+        async function updateExpenseInFirebase(id, expense) {
+            if (!currentUser) {
+                showToast('Please sign in first', 'error');
+                return { success: false };
+            }
+            try {
+                const btn = document.getElementById('submitBtn');
+                const spinner = document.getElementById('submitSpinner');
+                const btnText = document.getElementById('submitBtnText');
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
+                btnText.textContent = 'Updating...';
+
+                await updateDoc(doc(db, 'users', currentUser.uid, 'expenses', id), {
+                    amount: expense.amount,
+                    category: expense.category,
+                    description: expense.description || '',
+                    date: expense.date,
+                    month: expense.month,
+                    updatedAt: new Date().toISOString()
+                });
+
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                btnText.textContent = 'Add Expense';
+                return { success: true };
+            } catch (error) {
+                console.error("Error updating expense:", error);
+                showToast('Failed to update expense.', 'error');
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('submitSpinner').classList.add('hidden');
+                document.getElementById('submitBtnText').textContent = 'Add Expense';
+                return { success: false };
+            }
+        }
+
+        async function deleteExpenseFromFirebase(id) {
+            if (!currentUser) {
+                showToast('Please sign in first', 'error');
+                return { success: false };
+            }
+            try {
+                const btn = document.getElementById('confirmConfirmBtn');
+                const spinner = document.getElementById('confirmSpinner');
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
+
+                await deleteDoc(doc(db, 'users', currentUser.uid, 'expenses', id));
+
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                document.getElementById('confirmModal').classList.add('hidden');
+                return { success: true };
+            } catch (error) {
+                console.error("Error deleting expense:", error);
+                showToast('Failed to delete expense.', 'error');
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                return { success: false };
+            }
+        }
+
+        async function saveIncomeToFirebase(month, amount) {
+            if (!currentUser) {
+                showToast('Please sign in first', 'error');
+                return { success: false };
+            }
+            try {
+                const btn = document.getElementById('saveIncomeBtn');
+                const spinner = document.getElementById('incomeSpinner');
+                btn.disabled = true;
+                spinner.classList.remove('hidden');
+
+                await setDoc(doc(db, 'users', currentUser.uid, 'income', month), {
+                    month: month,
+                    amount: amount,
+                    updatedAt: new Date().toISOString()
+                });
+
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                document.getElementById('incomeModal').classList.add('hidden');
+                return { success: true };
+            } catch (error) {
+                console.error("Error saving income:", error);
+                showToast('Failed to save income.', 'error');
+                btn.disabled = false;
+                spinner.classList.add('hidden');
+                return { success: false };
+            }
+        }
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize auth state listener first
+            onAuthStateChanged(auth, async (user) => {
+                if (authInitialized) return; // Prevent duplicate initialization
+                authInitialized = true;
+
+                if (user) {
+                    // User is signed in
+                    currentUser = user;
+                    updateUserInfo(user);
+
+                    // Check for redirect result (in case of redirect sign-in)
+                    try {
+                        const redirectResult = await getRedirectResult(auth);
+                        if (redirectResult) {
+                            await handleSuccessfulAuth(redirectResult.user);
+                        } else {
+                            await initializeUserData(user);
+                        }
+                    } catch (error) {
+                        console.error("Redirect result error:", error);
+                        await initializeUserData(user);
+                    }
+                } else {
+                    // User is signed out - show login screen
+                    document.getElementById('loginScreen').classList.remove('hidden');
+                    document.getElementById('googleSignInBtn').classList.remove('hidden');
+                    document.getElementById('authLoading').classList.add('hidden');
+                }
+            }, (error) => {
+                console.error("Auth state error:", error);
+                showToast('Authentication error', 'error', 5000);
+            });
+
+            // Initialize UI elements
+            initUI();
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.history-item')) {
+                    clearActiveCard();
+                }
+            });
+        });
+
+        function initUI() {
+            const monthInput = document.getElementById('monthSelector');
+            monthInput.value = currentMonth;
+            document.getElementById('date').valueAsDate = new Date();
+            monthInput.addEventListener('change', (e) => {
+                currentMonth = e.target.value;
+                renderAll();
+                showToast(`Switched to ${currentMonth}`, 'info', 1500);
+            });
+            document.getElementById('expenseForm').addEventListener('submit', handleFormSubmit);
+            document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
+        }
+
+        // --- Tab Navigation ---
+        function switchTab(tabId) {
+            clearActiveCard();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
+                btn.classList.add('text-gray-500');
+                btn.style.borderBottomColor = 'transparent';
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+            const btn = document.getElementById('btn-' + tabId);
+            btn.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
+            btn.classList.remove('text-gray-500');
+            if (tabId === 'tab-overview' && chartInstance) {
+                setTimeout(() => chartInstance.resize(), 100);
+            }
+        }
+
+        // --- History Card Interaction ---
+        function clearActiveCard() {
+            activeCardId = null;
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+
+        function toggleCardAction(id, event) {
+            event.stopPropagation();
+            if (activeCardId === id) {
+                clearActiveCard();
+            } else {
+                activeCardId = id;
+                document.querySelectorAll('.history-item').forEach(item => {
+                    item.classList.remove('active');
+                    if (item.dataset.id === id) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // --- Core Logic ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const description = '';
+            const date = document.getElementById('date').value;
+            const editId = document.getElementById('editId').value;
+            const expenseData = { amount, category, description, date, month: currentMonth };
+
+            let result;
+            if (editId) {
+                result = await updateExpenseInFirebase(editId, expenseData);
+                if (result.success) {
+                    showToast('Expense updated!', 'success');
+                    resetForm();
+                }
+            } else {
+                result = await addExpenseToFirebase(expenseData);
+                if (result.success) {
+                    showToast('Expense added!', 'success');
+                    resetForm();
+                }
+            }
+        }
+
+        function deleteExpense(id) {
+            showConfirm('Delete this expense?', async () => {
+                const result = await deleteExpenseFromFirebase(id);
+                if (result.success) {
+                    showToast('Expense deleted!', 'success');
+                    clearActiveCard();
+                }
+            });
+        }
+
+        function editExpense(id) {
+            const expenses = appData.expenses[currentMonth] || [];
+            const expense = expenses.find(ex => ex.id === id);
+            if (!expense) return;
+            document.getElementById('editId').value = expense.id;
+            document.getElementById('amount').value = expense.amount;
+            document.getElementById('date').value = expense.date;
+            document.getElementById('category').value = expense.category;
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.replace('bg-indigo-600', 'bg-amber-500');
+            submitBtn.classList.replace('hover:bg-indigo-700', 'hover:bg-amber-600');
+            document.getElementById('submitBtnText').textContent = 'Update Expense';
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            switchTab('tab-add');
+            clearActiveCard();
+            showToast('Edit mode activated.', 'info');
+        }
+
+        function resetForm() {
+            document.getElementById('expenseForm').reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('date').valueAsDate = new Date();
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.replace('bg-amber-500', 'bg-indigo-600');
+            submitBtn.classList.replace('hover:bg-amber-600', 'hover:bg-indigo-700');
+            document.getElementById('submitBtnText').textContent = 'Add Expense';
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('category').value = settings.defaultCategory;
+        }
+
+        // --- Rendering ---
+        function renderAll() {
+            renderSummary();
+            renderTable();
+            renderChart();
+        }
+
+        function renderSummary() {
+            const expenses = appData.expenses[currentMonth] || [];
+            const income = appData.income[currentMonth] || 0;
+            const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+            const balance = income - totalExpenses;
+
+            const formatAmount = (amount, hide = false) => {
+                if (hide) return '****';
+                return settings.currency + Math.abs(amount).toFixed(2);
+            };
+
+            document.getElementById('displayIncome').textContent = formatAmount(income, !settings.privacy.showIncome);
+            document.getElementById('displayExpenses').textContent = formatAmount(totalExpenses, !settings.privacy.showExpenses);
+            document.getElementById('displayBalance').textContent = formatAmount(balance, !settings.privacy.showBalance);
+
+            const balanceEl = document.getElementById('displayBalance');
+            if (settings.privacy.showBalance) {
+                balanceEl.classList.remove('text-gray-900', 'dark:text-white');
+                balanceEl.classList.add(balance < 0 ? 'text-rose-600' : 'text-emerald-600');
+            }
+
+            const progressEl = document.getElementById('balanceProgress');
+            let percentage = 100;
+            if (income > 0) percentage = Math.max(0, Math.min(100, ((income - totalExpenses) / income) * 100));
+            else if (totalExpenses > 0) percentage = 0;
+            progressEl.style.width = `${percentage}%`;
+            progressEl.className = `h-full transition-all duration-500 ${percentage < 20 ? 'bg-rose-500' : 'bg-emerald-500'}`;
+        }
+
+        function renderTable() {
+            const desktopList = document.getElementById('desktopTransactionList');
+            const mobileList = document.getElementById('mobileTransactionList');
+            const emptyState = document.getElementById('emptyState');
+            const countLabel = document.getElementById('transactionCount');
+
+            desktopList.innerHTML = '';
+            mobileList.innerHTML = '';
+
+            const expenses = appData.expenses[currentMonth] || [];
+            countLabel.textContent = `${expenses.length} items`;
+
+            if (expenses.length === 0) {
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            const formatAmount = (amount) => settings.currency + amount.toFixed(2);
+
+            expenses.forEach((exp, index) => {
+                const cat = settings.categories.find(c => c.name === exp.category);
+                const badgeColor = cat ? cat.color : '#64748b';
+                const isEven = index % 2 === 1;
+                const bgClass = isEven
+                    ? 'bg-gray-50 dark:bg-gray-800/50'
+                    : 'bg-white dark:bg-dark-card';
+
+                const desktopItem = document.createElement('div');
+                desktopItem.className = `history-item ${bgClass} p-4 transition-all border-b border-gray-100 dark:border-dark-border last:border-0 cursor-pointer`;
+                desktopItem.dataset.id = exp.id;
+                desktopItem.onclick = (e) => toggleCardAction(exp.id, e);
+                desktopItem.innerHTML = `
+<div class="card-info flex items-center justify-between">
+<div class="flex items-center gap-4">
+<span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white" style="background-color: ${badgeColor}">${exp.category}</span>
+<span class="text-sm text-gray-500 dark:text-gray-400">${exp.date}</span>
+</div>
+<span class="font-bold text-gray-900 dark:text-white text-lg">${formatAmount(exp.amount)}</span>
+</div>
+<div class="action-buttons justify-center gap-4">
+<button onclick="editExpense('${exp.id}')" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+<i class="fa-solid fa-pen"></i> Edit
+</button>
+<button onclick="deleteExpense('${exp.id}')" class="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors">
+<i class="fa-solid fa-trash"></i> Delete
+</button>
+</div>
+`;
+                desktopList.appendChild(desktopItem);
+
+                const mobileCard = document.createElement('div');
+                mobileCard.className = `history-item ${bgClass} p-4 transition-all border-b border-gray-100 dark:border-dark-border last:border-0 cursor-pointer`;
+                mobileCard.dataset.id = exp.id;
+                mobileCard.onclick = (e) => toggleCardAction(exp.id, e);
+                mobileCard.innerHTML = `
+<div class="card-info flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="px-3 py-1.5 rounded-full text-xs font-semibold text-white" style="background-color: ${badgeColor}">${exp.category}</span>
+<span class="text-sm text-gray-500 dark:text-gray-400">${exp.date}</span>
+</div>
+<span class="font-bold text-gray-900 dark:text-white text-lg">${formatAmount(exp.amount)}</span>
+</div>
+<div class="action-buttons justify-center gap-3">
+<button onclick="editExpense('${exp.id}')" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
+<i class="fa-solid fa-pen"></i> Edit
+</button>
+<button onclick="deleteExpense('${exp.id}')" class="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-lg transition-colors">
+<i class="fa-solid fa-trash"></i> Delete
+</button>
+</div>
+`;
+                mobileList.appendChild(mobileCard);
+            });
+        }
+
+        function renderChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            const expenses = appData.expenses[currentMonth] || [];
+            const chartEmptyState = document.getElementById('chartEmptyState');
+            const canvasContainer = document.querySelector('.relative.h-48, .relative.h-64');
+
+            const categoryTotals = {};
+            expenses.forEach(exp => {
+                categoryTotals[exp.category] = (categoryTotals[exp.category] || 0) + exp.amount;
+            });
+
+            const labels = Object.keys(categoryTotals);
+            const data = Object.values(categoryTotals);
+            const bgColors = labels.map(label => {
+                const cat = settings.categories.find(c => c.name === label);
+                return cat ? cat.color : '#64748b';
+            });
+
+            if (labels.length === 0) {
+                if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+                if (canvasContainer) canvasContainer.classList.add('hidden');
+                chartEmptyState.classList.remove('hidden');
+                return;
+            }
+
+            if (canvasContainer) canvasContainer.classList.remove('hidden');
+            chartEmptyState.classList.add('hidden');
+
+            if (chartInstance) chartInstance.destroy();
+
+            const isDark = document.documentElement.classList.contains('dark');
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{ data, backgroundColor: bgColors, borderWidth: 0, hoverOffset: 4 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 15,
+                                font: { family: 'Inter', size: 10 },
+                                color: isDark ? '#94a3b8' : '#475569'
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    animation: { animateScale: true, animateRotate: true }
+                }
+            });
+        }
+
+        // --- Income Modal ---
+        function openIncomeModal() {
+            if (!settings.privacy.showIncome) return;
+            const modal = document.getElementById('incomeModal');
+            const input = document.getElementById('incomeInput');
+            input.value = appData.income[currentMonth] || '';
+            modal.classList.remove('hidden');
+            input.focus();
+        }
+
+        function closeIncomeModal() {
+            document.getElementById('incomeModal').classList.add('hidden');
+        }
+
+        async function saveIncome() {
+            const val = parseFloat(document.getElementById('incomeInput').value);
+            const amount = isNaN(val) ? 0 : val;
+            const result = await saveIncomeToFirebase(currentMonth, amount);
+            if (result.success) {
+                showToast('Income saved!', 'success');
+            }
+        }
+
+        document.getElementById('incomeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'incomeModal') closeIncomeModal();
+        });
+
+        // Make functions globally available
+        window.switchTab = switchTab;
+        window.switchSettingsSubTab = switchSettingsSubTab;
+        window.editExpense = editExpense;
+        window.deleteExpense = deleteExpense;
+        window.openIncomeModal = openIncomeModal;
+        window.closeIncomeModal = closeIncomeModal;
+        window.saveIncome = saveIncome;
+        window.selectColor = selectColor;
+        window.addNewCategory = addNewCategory;
+        window.updateCategoryName = updateCategoryName;
+        window.removeCategory = removeCategory;
+        window.saveCurrencyFromInput = saveCurrencyFromInput;
+        window.toggleDarkMode = toggleDarkMode;
+        window.updateDefaultCategory = updateDefaultCategory;
+        window.updatePrivacySettings = updatePrivacySettings;
+        window.showToast = showToast;
+        window.handleGoogleSignIn = handleGoogleSignIn;
+        window.handleSignOut = handleSignOut;
+    </script>
+</body>
+
+</html>
